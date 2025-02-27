@@ -704,18 +704,21 @@ if(!this.getJugadorActual().isHumano()){
                 if ((this.getTablero().getTablero()[i][c].equals(red) || this.getTablero().getTablero()[i][c].equals(blue)) && (this.getJugadorActual().getCubos() > 0)) {
             if (this.getJugadorActual().equals(this.getJugador1())) {
                 this.getTablero().getTablero()[i][c] = Dosrojo;
-                
-                this.getVt().getBotones()[i][c].setBackground(new Color(255,102,102));
+
+                this.getVt().getBotones()[i][c].setForeground(new Color(255,102,102));
                 this.getVt().getBotones()[i][c].setText("2");
-               
+                this.getVt().getBotones()[i][c].repaint();
+
 
                 j.setCubos(j.getCubos() - 1);
                  
 
             } else {
                 this.getTablero().getTablero()[i][c] = Dosazul;
-                this.getVt().getBotones()[i][c].setBackground(new Color (153,153,255));
+                this.getVt().getBotones()[i][c].setForeground(new Color (153,153,255));
                 this.getVt().getBotones()[i][c].setText("2");
+                this.getVt().getBotones()[i][c].revalidate();
+                this.getVt().getBotones()[i][c].repaint();
                 j.setCubos(j.getCubos() - 1);
                  
 
@@ -723,14 +726,18 @@ if(!this.getJugadorActual().isHumano()){
         } else if ((this.getTablero().getTablero()[i][c].equals(Dosrojo) || this.getTablero().getTablero()[i][c].equals(Dosazul)) && (this.getJugadorActual().getCubos() > 0)) {
             if (this.getJugadorActual().equals(this.getJugador1())) {
                 this.getTablero().getTablero()[i][c] = TresRojo;
-                this.getVt().getBotones()[i][c].setBackground(new Color(255,102,102));
+                this.getVt().getBotones()[i][c].setForeground(new Color(255,102,102));
                 this.getVt().getBotones()[i][c].setText("3");
+                this.getVt().getBotones()[i][c].revalidate();
+                this.getVt().getBotones()[i][c].repaint();
                 j.setCubos(j.getCubos() - 1);
                  
             } else {
                 this.getTablero().getTablero()[i][c] = TresAzul;
-                this.getVt().getBotones()[i][c].setBackground(new Color (102,102,255));
+                this.getVt().getBotones()[i][c].setForeground(new Color (102,102,255));
                 this.getVt().getBotones()[i][c].setText("3");
+                this.getVt().getBotones()[i][c].revalidate();
+                this.getVt().getBotones()[i][c].repaint();
                 j.setCubos(j.getCubos() - 1);
                  
             }
@@ -738,28 +745,36 @@ if(!this.getJugadorActual().isHumano()){
         } else if ((this.getTablero().getTablero()[i][c].equals(TresRojo) || this.getTablero().getTablero()[i][c].equals(TresAzul)) && (this.getJugadorActual().getCubos() > 0)) {
             if (this.getJugadorActual().equals(this.getJugador1())) {
                 this.getTablero().getTablero()[i][c] = CuatroRojo;
-                this.getVt().getBotones()[i][c].setBackground(new Color(204,0,0));
+                this.getVt().getBotones()[i][c].setForeground(new Color(204,0,0));
                 this.getVt().getBotones()[i][c].setText("4");
+                this.getVt().getBotones()[i][c].revalidate();
+                this.getVt().getBotones()[i][c].repaint();
                 j.setCubos(j.getCubos() - 1);
                  
             } else {
                 this.getTablero().getTablero()[i][c] = CuatroAzul;
-                this.getVt().getBotones()[i][c].setBackground(new Color (0,0,255));
+                this.getVt().getBotones()[i][c].setForeground(new Color (0,0,255));
                 this.getVt().getBotones()[i][c].setText("4");
+                this.getVt().getBotones()[i][c].revalidate();
+                this.getVt().getBotones()[i][c].repaint();
                  j.setCubos(j.getCubos() - 1);
                 
             }
         } else if ((this.getTablero().getTablero()[i][c].equals(CuatroRojo) || this.getTablero().getTablero()[i][c].equals(CuatroAzul)) && (this.getJugadorActual().getCubos() > 0)) {
             if (this.getJugadorActual().equals(this.getJugador1())) {
                 this.getTablero().getTablero()[i][c] = CincoRojo;
-                this.getVt().getBotones()[i][c].setBackground(new Color(153,0,0));
+                this.getVt().getBotones()[i][c].setForeground(new Color(153,0,0));
                 this.getVt().getBotones()[i][c].setText("5");
+                this.getVt().getBotones()[i][c].revalidate();
+                this.getVt().getBotones()[i][c].repaint();
                 j.setCubos(j.getCubos() - 1);
                 
             } else {
                 this.getTablero().getTablero()[i][c] = CincoAzul;
-                this.getVt().getBotones()[i][c].setBackground(new Color(0,0,102));
+                this.getVt().getBotones()[i][c].setForeground(new Color(0,0,102));
                 this.getVt().getBotones()[i][c].setText("5");
+                this.getVt().getBotones()[i][c].revalidate();
+                this.getVt().getBotones()[i][c].repaint();
                 j.setCubos(j.getCubos() - 1);
                             }
         } else if (this.getTablero().getTablero()[i][c].equals(CincoRojo) || this.getTablero().getTablero()[i][c].equals(CincoAzul)) {
