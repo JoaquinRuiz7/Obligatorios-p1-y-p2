@@ -226,18 +226,8 @@ if(this.getSistema().getPartidasGuardadas().isEmpty()){
            v.setVisible(true);
     }//GEN-LAST:event_registrarJugadorActionPerformed
 public void puedenJugar(){
-    if(this.getSistema().getJugadores().size()>0){
-        JugarVsPce.setEnabled(true);
-        
-    }else{
-        JugarVsPce.setEnabled(false);
-    }
-    if(this.getSistema().getJugadores().size()>=2){
-        JugarModoVersus.setEnabled(true);
-        
-    }else{
-        JugarModoVersus.setEnabled(false);
-    }
+    JugarVsPce.setEnabled(this.getSistema().getJugadores().size() > 0);
+    JugarModoVersus.setEnabled(this.getSistema().getJugadores().size() >= 2);
 }
     
     

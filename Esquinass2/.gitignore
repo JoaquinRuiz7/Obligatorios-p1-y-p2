@@ -1,0 +1,9 @@
+.idea
+out
+dist
+build
+nbproject
+build.xml
+datos.txt
+Esquinass2.iml
+manifest.mf

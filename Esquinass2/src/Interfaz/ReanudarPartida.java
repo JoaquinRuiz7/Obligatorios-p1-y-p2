@@ -66,7 +66,7 @@ public class ReanudarPartida extends javax.swing.JFrame {
 
         partidasGuardadas.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         partidasGuardadas.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });

@@ -13,7 +13,7 @@ public class JugarVsHumano extends javax.swing.JFrame {
    private Jugador juugador1;
    private Jugador juugador2;
    private Juego juego;
-   private String [] music = {"Con musica","Sin musica"};
+   private final String [] music = {"Con musica","Sin musica"};
    private boolean cllickeoT;
    private VentanaMenu vm;
 
@@ -154,7 +154,7 @@ public class JugarVsHumano extends javax.swing.JFrame {
         jug.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jug.setForeground(new java.awt.Color(255, 255, 255));
         jug.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -172,7 +172,7 @@ public class JugarVsHumano extends javax.swing.JFrame {
         musica.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         musica.setForeground(new java.awt.Color(255, 255, 255));
         musica.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -255,7 +255,7 @@ public class JugarVsHumano extends javax.swing.JFrame {
         tiempo.setBounds(530, 610, 150, 27);
 
         lol.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });

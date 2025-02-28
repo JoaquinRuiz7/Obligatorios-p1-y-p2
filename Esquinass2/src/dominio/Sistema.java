@@ -55,6 +55,7 @@ public int cantidadPArtisasGanadas(Jugador j){
         Jugador ju = jugadores.get(i);
         if ( j.equals(ju)){
             ganadas = j.getWin();
+            break;
         }
         
     }

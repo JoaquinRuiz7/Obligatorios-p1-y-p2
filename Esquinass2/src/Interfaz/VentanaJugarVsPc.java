@@ -9,7 +9,7 @@ public class VentanaJugarVsPc extends javax.swing.JFrame implements Serializable
 
     private Sistema sistema;
    private Mensajes i;
-   private String [] music = {"Con musica","Sin musica"};
+   private final String [] music = {"Con musica","Sin musica"};
    private Juego juego;
    private VentanaMenu vm;
 
@@ -87,7 +87,7 @@ public class VentanaJugarVsPc extends javax.swing.JFrame implements Serializable
         jugadores.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jugadores.setForeground(new java.awt.Color(255, 255, 255));
         jugadores.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -106,7 +106,7 @@ public class VentanaJugarVsPc extends javax.swing.JFrame implements Serializable
         musica.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         musica.setForeground(new java.awt.Color(255, 255, 255));
         musica.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -182,7 +182,7 @@ public class VentanaJugarVsPc extends javax.swing.JFrame implements Serializable
                  Mensajes i = new Mensajes();
                  Tablero t = new Tablero();
                  Mensajes in = new Mensajes(); 
-                 String ta[][] = new String[6][6];
+                 String[][] ta = new String[6][6];
                  for (int j = 0; j <ta.length; j++) {
                      for (int k = 0; k <ta[0].length; k++) {
                          ta[j][k]= " ";
