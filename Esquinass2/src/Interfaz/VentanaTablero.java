@@ -28,7 +28,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
     private PerdistePorTiempo ppt;
     private boolean tiem ;
     private VentanaMenu vm;
-    private String[] vacio = {""};
+    private final String[] vacio = {""};
     
     
 
@@ -181,11 +181,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
         this.getJuego().setVt(this);
         this.cambio = false;
         this.setTitle(getJuego().getJugador1().getNombre() + " VS " + getJuego().getJugador2().getNombre());
-        if (this.getJuego().getJugador1().getCubos() < 25 || this.getJuego().getJugador2().getCubos() < 25) {
-            this.setReanudada(true);
-        } else {
-            this.setReanudada(false);
-        }
+        this.setReanudada(this.getJuego().getJugador1().getCubos() < 25 || this.getJuego().getJugador2().getCubos() < 25);
         this.pj = false;
 
         initComponents();
@@ -480,7 +476,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
         avisa.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         avisa.setForeground(new java.awt.Color(255, 255, 255));
         avisa.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -493,7 +489,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
         avisaAlargo.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         avisaAlargo.setForeground(new java.awt.Color(255, 255, 255));
         avisaAlargo.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -506,7 +502,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
         avisaPc.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         avisaPc.setForeground(new java.awt.Color(255, 255, 255));
         avisaPc.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -519,7 +515,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
         avisaPCesquina.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         avisaPCesquina.setForeground(new java.awt.Color(255, 255, 255));
         avisaPCesquina.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            final String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -641,8 +637,8 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
     // End of variables declaration//GEN-END:variables
 private class ListenerBoton implements ActionListener {
 
-        private int x;
-        private int y;
+        private final int x;
+        private final int y;
 
         public ListenerBoton(int i, int j) {
             // en el constructor se almacena la fila y columna que se presionó

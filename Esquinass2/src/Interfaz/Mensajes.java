@@ -63,7 +63,7 @@ public class Mensajes implements Serializable{
                 }
 
             }
-            System.out.println("");
+            System.out.println();
 
         }
 
