@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import javax.swing.*;
 
 public class Juego implements Serializable {
@@ -81,18 +80,6 @@ public class Juego implements Serializable {
 
   public void setTablero(Tablero tablero) {
     this.tablero = tablero;
-  }
-
-  private void ganoAlAbandonar(Jugador jugador) {
-    if (this.getJugadorActual().equals(this.getJugador1())) {
-      this.getJugadorActual().setFichas(Collections.emptyList());
-      this.getJugadorActual().setAbandono(true);
-      this.getJugador2().incrementarPartidasGanadas();
-    } else {
-      this.getJugadorActual().setFichas(Collections.emptyList());
-      this.getJugadorActual().setAbandono(true);
-      this.getJugador1().incrementarPartidasGanadas();
-    }
   }
 
   public void ponePc(int i, int j, Tablero t, String red, String blue, boolean pj) {
@@ -226,6 +213,7 @@ public class Juego implements Serializable {
         Jugador jugadorActual = this.getJugadorActual();
 
         if (jugadorActual.equals(this.getJugador1())) {
+          this.getTablero().getFichas()[fila][columna] = this.getJugadorActual().getFichas().get(0);
           // Rojo
           this.getJugadorActual().descontarFichas(1);
           // rojo
@@ -238,6 +226,7 @@ public class Juego implements Serializable {
           alargoEsquina(PosicionI, PosicionJ, this.getTablero(), red, blue);
 
         } else {
+          this.getTablero().getFichas()[fila][columna] = this.getJugadorActual().getFichas().get(0);
           // Azul
           this.getJugadorActual().descontarFichas(1);
 
