@@ -1,10 +1,14 @@
 package dominio;
 
 import Interfaz.*;
+import dominio.fichas.FichaAzul;
+import dominio.fichas.IFicha;
+import dominio.fichas.Tonalidad;
 import java.awt.*;
 import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.swing.*;
 
 public class Juego implements Serializable {
@@ -80,13 +84,13 @@ public class Juego implements Serializable {
 
   private void ganoAlAbandonar(Jugador jugador) {
     if (this.getJugadorActual().equals(this.getJugador1())) {
-      this.getJugadorActual().setCubos(0);
+      this.getJugadorActual().setFichas(Collections.emptyList());
       this.getJugadorActual().setAbandono(true);
-      this.getJugador2().setWin(this.getJugador2().getWin() + 1);
+      this.getJugador2().incrementarPartidasGanadas();
     } else {
-      this.getJugadorActual().setCubos(0);
+      this.getJugadorActual().setFichas(Collections.emptyList());
       this.getJugadorActual().setAbandono(true);
-      this.getJugador1().setWin(this.getJugador1().getWin() + 1);
+      this.getJugador1().incrementarPartidasGanadas();
     }
   }
 
@@ -95,38 +99,30 @@ public class Juego implements Serializable {
     int pI = 0;
     int pJ = 0;
     String letra = "";
-    String[][] ta = t.getTablero();
-    String Dosrojo = "\u001B[31m2\u001B[0m";
-    String Dosazul = "\033[34m2\u001B[0m";
-    String TresRojo = "\u001B[31m3\u001B[0m";
-    String TresAzul = "\033[34m3\u001B[0m";
-    String CuatroRojo = "\u001B[31m4\u001B[0m";
-    String CuatroAzul = "\033[34m4\u001B[0m";
-    String CincoRojo = "\u001B[31m5\u001B[0m";
-    String CincoAzul = "\033[34m5\u001B[0m";
+    IFicha[][] ta = t.getTablero();
     if (!pj) {
       pI = i;
       pJ = j;
 
       if (!pj) {
         if (pI > 0 && pI < 5 && (pJ < 5 && pJ > 0)) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 0) {
-          ta[pI + 1][pJ] = blue;
+          ta[pI + 1][pJ] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 5) {
-          ta[pI - 1][pJ] = blue;
+          ta[pI - 1][pJ] = this.getJugadorActual().getFichas().get(0);
         } else if (pJ == 0) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pJ == 5) {
-          ta[pI][pJ - 1] = blue;
+          ta[pI][pJ - 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 0 && pJ == 0) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 0 && pJ == 5) {
-          ta[pI][pJ - 1] = blue;
+          ta[pI][pJ - 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 5 && pJ == 0) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 5 && pJ == 5) {
-          ta[pI][pJ - 1] = blue;
+          ta[pI][pJ - 1] = this.getJugadorActual().getFichas().get(0);
         }
       }
     } else {
@@ -191,9 +187,12 @@ public class Juego implements Serializable {
         }
       }
 
-      ta[posI][posJ] = blue;
-      this.getJugadorActual().setCubos(this.getJugadorActual().getCubos() - 1);
-      this.actualizarBoton(this.getVt().getBotones()[posI][posJ], new Color(204, 204, 255), "A");
+      ta[posI][posJ] = this.getJugadorActual().getFichas().get(0);
+      this.getJugadorActual().descontarFichas(1);
+      this.actualizarBoton(
+          this.getVt().getBotones()[posI][posJ],
+          new FichaAzul().getColor(Tonalidad.MUY_CLARA),
+          "A");
 
       this.numeroALetra(posI, false, false);
       letra = this.numeroALetra(posI, false, false);
@@ -224,15 +223,16 @@ public class Juego implements Serializable {
 
       // Aca es donde se coloca la ficha en la posicion tablero[PosicionI][PosicionJ]
       if (Podes) {
-        if (this.getJugadorActual().equals(this.getJugador1())) {
+        Jugador jugadorActual = this.getJugadorActual();
+
+        if (jugadorActual.equals(this.getJugador1())) {
           // Rojo
-          this.getTablero().getTablero()[PosicionI][PosicionJ] = red;
-          this.getJugadorActual().setCubos(this.getJugadorActual().getCubos() - 1);
-
+          this.getJugadorActual().descontarFichas(1);
           // rojo
-
           this.actualizarBoton(
-              this.getVt().getBotones()[PosicionI][PosicionJ], new Color(255, 204, 204), "R");
+              this.getVt().getBotones()[PosicionI][PosicionJ],
+              jugadorActual.getFichas().get(0).getColor(Tonalidad.MUY_CLARA),
+              "R");
 
           formaEsquina(this.getJugadorActual(), PosicionJ, PosicionI, red, blue);
           alargoEsquina(
@@ -240,10 +240,11 @@ public class Juego implements Serializable {
 
         } else {
           // Azul
-          this.getTablero().getTablero()[PosicionI][PosicionJ] = blue;
-          this.getJugadorActual().setCubos(this.getJugadorActual().getCubos() - 1);
+          this.getJugadorActual().descontarFichas(1);
 
-          this.getVt().getBotones()[PosicionI][PosicionJ].setBackground(new Color(204, 204, 255));
+          this.getVt()
+              .getBotones()[PosicionI][PosicionJ]
+              .setBackground(jugadorActual.getFichas().get(0).getColor(Tonalidad.MUY_CLARA));
           this.getVt().getBotones()[PosicionI][PosicionJ].setText("A");
           this.getVt().getBotones()[PosicionI][PosicionJ].repaint();
           formaEsquina(this.getJugadorActual(), PosicionJ, PosicionI, red, blue);
@@ -311,7 +312,7 @@ public class Juego implements Serializable {
     boolean meVoy = false;
     String cincoRojo = "\u001B[31m5\u001B[0m";
     String cincoAzul = "\033[34m5\u001B[0m";
-    String[] fila = tab.getTablero()[i];
+    IFicha[] fila = tab.getTablero()[i];
     int contador = 0;
 
     for (int k = (j + 1); k < fila.length; k++) {
@@ -468,7 +469,7 @@ public class Juego implements Serializable {
     String cincoAzul = "\033[34m5\u001B[0m";
     String[] fila = tab.getTablero()[i];
     int contador = 0;
-    if (this.getJugadorActual().getCubos() > 0) {
+    if (this.getJugadorActual().tieneFichas()) {
       for (int k = j; k < fila.length; k++) {
         if (fila[k].endsWith(reset)) {
           contador++;
@@ -705,8 +706,8 @@ public class Juego implements Serializable {
         }
       }
     }
-    puntajeJugador1 -= this.getJugador1().getCubos();
-    puntajeJugador2 -= this.getJugador2().getCubos();
+    puntajeJugador1 -= this.getJugador1().getFichasRestantes();
+    puntajeJugador2 -= this.getJugador2().getFichasRestantes();
     this.getJugador1().setPuntaje(puntajeJugador1);
     this.getJugador2().setPuntaje(puntajeJugador2);
   }
@@ -789,7 +790,7 @@ public class Juego implements Serializable {
     JButton boton = this.getVt().getBotones()[i][c];
     if (boton == null) return; // Evita NullPointerException
 
-    if (this.getJugadorActual().getCubos() > 0) {
+    if (this.getJugadorActual().tieneFichas()) {
       if ((this.getTablero().getTablero()[i][c].equals(red)
           || this.getTablero().getTablero()[i][c].equals(blue))) {
         if (this.getJugadorActual().equals(this.getJugador1())) {
@@ -831,7 +832,7 @@ public class Juego implements Serializable {
         this.getMensajes().esquinaSinGracia(this.getVt());
       }
 
-      j.setCubos(j.getCubos() - 1);
+      j.descontarFichas(1);
     }
   }
 
@@ -858,7 +859,7 @@ public class Juego implements Serializable {
     String letra = "";
     ArrayList<String> esquinasFormadas = new ArrayList<>();
     // Para ver si forma esquina hacia la derecha para abajo.
-    if (this.getJugadorActual().getCubos() > 0) {
+    if (this.getJugadorActual().tieneFichas()) {
       if ((c > 0 && c < 5) && (i < 5 && i > 0)) {
         if ((tab[i][c + 1].endsWith(reset)) && (tab[i + 1][c + 1].endsWith(reset))) {
           int columna = (c + 1);
@@ -1656,7 +1657,6 @@ public class Juego implements Serializable {
     String reset = "\u001B[0m";
     if ((!tablero.getTablero()[i][j].endsWith(reset))) {
       Podes = true;
-
     } else if (this.getJugadorActual().isHumano()) {
       mensajes.yaHayFicha(this.getVt());
     }
