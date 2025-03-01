@@ -712,63 +712,6 @@ public class Juego implements Serializable {
     this.getJugador2().setPuntaje(puntajeJugador2);
   }
 
-  public int calculaFichas(Tablero tab, int fila) {
-    int puntajeJugador1 = 0;
-    int puntajeJugador2 = 0;
-
-    String Dosrojo = "\u001B[31m2\u001B[0m";
-    String Dosazul = "\033[34m2\u001B[0m";
-    String TresRojo = "\u001B[31m3\u001B[0m";
-    String TresAzul = "\033[34m3\u001B[0m";
-    String CuatroRojo = "\u001B[31m4\u001B[0m";
-    String CuatroAzul = "\033[34m4\u001B[0m";
-    String CincoRojo = "\u001B[31m5\u001B[0m";
-    String CincoAzul = "\033[34m5\u001B[0m";
-    for (int i = 0; i < tab.getFichas().length; i++) {
-
-      switch (tab.getFichas()[fila][i]) {
-        // Puntaje del Rojo
-        case "\u001B[31mR\u001B[0m":
-          puntajeJugador1++;
-          break;
-        case "\u001B[31m2\u001B[0m":
-          puntajeJugador1 += 2;
-          break;
-        case "\u001B[31m3\u001B[0m":
-          puntajeJugador1 += 3;
-          break;
-        case "\u001B[31m4\u001B[0m":
-          puntajeJugador1 += 4;
-          break;
-        case "\u001B[31m5\u001B[0m":
-          puntajeJugador1 += 5;
-          break;
-        // Fin puntaje del rojo.
-        // Puntaje del azul.
-        case "\033[34mA\u001B[0m":
-          puntajeJugador2++;
-          break;
-        case "\033[34m2\u001B[0m":
-          puntajeJugador2 += 2;
-          break;
-        case "\033[34m3\u001B[0m":
-          puntajeJugador2 += 3;
-          break;
-        case "\033[34m4\u001B[0m":
-          puntajeJugador2 += 4;
-          break;
-        case "\033[34m5\u001B[0m":
-          puntajeJugador2 += 5;
-          break;
-          // Fin puntaje azul.
-
-      }
-    }
-
-    int total = puntajeJugador1 + puntajeJugador2;
-    return total;
-  }
-
   public VentanaTablero getVt() {
     return vt;
   }
@@ -794,38 +737,32 @@ public class Juego implements Serializable {
       if ((this.getTablero().getFichas()[i][c].equals(red)
           || this.getTablero().getFichas()[i][c].equals(blue))) {
         if (this.getJugadorActual().equals(this.getJugador1())) {
-          actualizarBoton(boton, new Color(255, 102, 102), "2");
-          this.getTablero().getFichas()[i][c] = Dosrojo;
+          actualizarBoton(
+              boton, this.getTablero().getFichas()[i][c].getColor(Tonalidad.CLARA), "2");
         } else {
-          actualizarBoton(boton, new Color(153, 153, 255), "2");
-          this.getTablero().getFichas()[i][c] = Dosazul;
+          actualizarBoton(
+              boton, this.getTablero().getFichas()[i][c].getColor(Tonalidad.CLARA), "2");
         }
       } else if (this.getTablero().getFichas()[i][c].equals(Dosrojo)
           || this.getTablero().getFichas()[i][c].equals(Dosazul)) {
         if (this.getJugadorActual().equals(this.getJugador1())) {
           actualizarBoton(boton, new Color(255, 102, 102), "3");
-          this.getTablero().getFichas()[i][c] = TresRojo;
         } else {
           actualizarBoton(boton, new Color(102, 102, 255), "3");
-          this.getTablero().getFichas()[i][c] = TresAzul;
         }
       } else if (this.getTablero().getFichas()[i][c].equals(TresRojo)
           || this.getTablero().getFichas()[i][c].equals(TresAzul)) {
         if (this.getJugadorActual().equals(this.getJugador1())) {
           actualizarBoton(boton, new Color(204, 0, 0), "4");
-          this.getTablero().getFichas()[i][c] = CuatroRojo;
         } else {
           actualizarBoton(boton, new Color(0, 0, 255), "4");
-          this.getTablero().getFichas()[i][c] = CuatroAzul;
         }
       } else if (this.getTablero().getFichas()[i][c].equals(CuatroRojo)
           || this.getTablero().getFichas()[i][c].equals(CuatroAzul)) {
         if (this.getJugadorActual().equals(this.getJugador1())) {
           actualizarBoton(boton, new Color(153, 0, 0), "5");
-          this.getTablero().getFichas()[i][c] = CincoRojo;
         } else {
           actualizarBoton(boton, new Color(0, 0, 102), "5");
-          this.getTablero().getFichas()[i][c] = CincoAzul;
         }
       } else if (this.getTablero().getFichas()[i][c].equals(CincoRojo)
           || this.getTablero().getFichas()[i][c].equals(CincoAzul)) {
@@ -853,15 +790,14 @@ public class Juego implements Serializable {
         });
   }
 
-  private void formaEsquina(Jugador j, int c, int i, String red, String blue) {
-    String[][] tab = this.getTablero().getFichas();
-    String reset = "\u001B[0m";
+  private void formaEsquina(int c, int i, String red, String blue) {
+    IFicha[][] tab = this.getTablero().getFichas();
     String letra = "";
     ArrayList<String> esquinasFormadas = new ArrayList<>();
     // Para ver si forma esquina hacia la derecha para abajo.
     if (this.getJugadorActual().tieneFichas()) {
       if ((c > 0 && c < 5) && (i < 5 && i > 0)) {
-        if ((tab[i][c + 1].endsWith(reset)) && (tab[i + 1][c + 1].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra()) && (!tab[i + 1][c + 1].esFichaNeutra())) {
           int columna = (c + 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
@@ -869,74 +805,74 @@ public class Juego implements Serializable {
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         } // Para ver si forma esquina para abajo a la derecha pero viendo desde la columna.
-        if ((tab[i + 1][c].endsWith(reset)) && (tab[i + 1][c + 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra()) && (!tab[i + 1][c + 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // Para ver si se forma esquina para abajo a la izquierda respecto de la fila .
-        if ((tab[i][c - 1].endsWith(reset)) && (tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra()) && (!tab[i + 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         } // Para ver si forma esquina abajo a la izquierda respecto de columna.
-        if ((tab[i + 1][c].endsWith(reset)) && (tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra()) && (!tab[i + 1][c - 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // Para ver si forma esquina arriba a la derecha con respecto a la columna.
-        if ((tab[i - 1][c].endsWith(reset)) && (tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra()) && (!tab[i - 1][c + 1].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // Para ver si forma essquina arriba a la derecha con respecto a fila.
-        if ((tab[i][c + 1].endsWith(reset)) && (tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra()) && (!tab[i - 1][c + 1].esFichaNeutra())) {
           int columna = (c + 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         } // Para ver si forma esquina arriba a la izquierda respecto de columna.
-        if ((tab[i - 1][c].endsWith(reset)) && (tab[i - 1][c - 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra()) && (!tab[i - 1][c - 1].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // Para ver si se forma esquina arriba a la izquierda co respecto a la fila.
-        if ((tab[i][c - 1].endsWith(reset)) && (tab[i - 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra()) && (!tab[i - 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         } // PAra ver si forma esquina porque mi ficha esta rodeada por dos fichas.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c - 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c - 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
@@ -945,7 +881,7 @@ public class Juego implements Serializable {
         // Termina para ver fichas rodeadas .
       } else if (i == 0 && (c > 0 && c < 5)) {
         // Abajo a la iquiera respecto columna.
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
@@ -953,34 +889,34 @@ public class Juego implements Serializable {
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         }
         // Abajo a la derecha ,columna.
-        if (tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset)) {
+        if (!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra()) {
           int columna = (c + 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         } // abajo derecha. columna
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // abajo izquierda columna
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // Si la ficha puesta esta rodeada.
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
@@ -989,28 +925,28 @@ public class Juego implements Serializable {
       } // para la columna de la izquierda.
       else if (c == 0 && (i < 5 && i > 0)) {
         // Para esquina hacia la drecha para abajo fila.
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
           int columna = (c + 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
           int columna = (c + 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
@@ -1018,14 +954,14 @@ public class Juego implements Serializable {
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
         // para ficha rodeada desde arriba y costado derecho.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
         // PAra ficha rodeada desde abajo y el costado derecho
-        if ((tab[i + 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
@@ -1034,38 +970,38 @@ public class Juego implements Serializable {
       } // para  la fila de abajo del todo.
       else if (i == 5 && (c < 5 && c > 0)) {
         // ficha rodeada por otras.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
         }
         // fin ficha rodeada.
-        if ((tab[i - 1][c - 1].endsWith(reset) && tab[i - 1][c].endsWith(reset))) {
+        if ((!tab[i - 1][c - 1].esFichaNeutra() && !tab[i - 1][c].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
           int columna = (c + 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
@@ -1074,40 +1010,40 @@ public class Juego implements Serializable {
         }
       } // para la columna a la derecha del todo.
       else if (c == 5 && (i > 0 && i < 5)) {
-        if ((tab[i][c - 1].endsWith(reset) && (tab[i - 1][c].endsWith(reset)))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && (!tab[i - 1][c].esFichaNeutra()))) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // Con respecto a columna.
-        if ((tab[i + 1][c].endsWith(reset)) && (tab[i][c - 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra()) && (!tab[i][c - 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         } // Con respecto a columna.
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         } // fila.
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         } // fila.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
@@ -1116,21 +1052,21 @@ public class Juego implements Serializable {
         }
       } // Esquina en posicion [0][0].
       else if (i == 0 && c == 0) {
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
           int columna = (c + 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
@@ -1138,21 +1074,21 @@ public class Juego implements Serializable {
         }
       } // El caso que forme esquina en la esquina inferior izuierda de la matriz.
       else if (i == 5 && c == 0) {
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+        if ((!tab[i][c + 1].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
           int columna = (c + 1);
           letra = numeroALetra(i, false, false);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
@@ -1160,21 +1096,21 @@ public class Juego implements Serializable {
         }
       } // para la esquina inferior a la derecha de la matriz.
       else if (i == 5 && c == 5) {
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
           int fila = (i - 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, false, true);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           letra = numeroALetra(i, false, false);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c - 1].endsWith(reset))) {
+        if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c - 1].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
@@ -1182,21 +1118,21 @@ public class Juego implements Serializable {
         }
       } // Para la esquina de arriba del todo a al a derecha del todo de la matriz Posicion[0][5]
       else if (i == 0 && c == 5) {
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
           int columna = (c - 1);
           numeroColor(red, blue, i, columna, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
         }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+        if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
           int fila = (i + 1);
           numeroColor(red, blue, fila, c, this.getJugadorActual());
           letra = numeroALetra(i, true, false);
           this.getMensajes()
               .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
         }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+        if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
           numeroColor(red, blue, i, c, this.getJugadorActual());
           letra = numeroALetra(i, false, false);
           this.getMensajes()
