@@ -65,11 +65,11 @@ public class Mensajes implements Serializable {
 
     System.out.println("  1  2  3  4  5  6");
 
-    for (int i = 0; i < juego.getTablero().getTablero().length; i++) {
+    for (int i = 0; i < juego.getTablero().getFichas().length; i++) {
       System.out.print(AF[i]);
-      for (int j = 0; j < juego.getTablero().getTablero()[0].length; j++) {
-        if (juego.getTablero().getTablero()[i][j].endsWith("\u001B[0m")) {
-          System.out.print("|" + juego.getTablero().getTablero()[i][j] + "|");
+      for (int j = 0; j < juego.getTablero().getFichas()[0].length; j++) {
+        if (juego.getTablero().getFichas()[i][j].endsWith("\u001B[0m")) {
+          System.out.print("|" + juego.getTablero().getFichas()[i][j] + "|");
         } else {
           System.out.print("|_|");
         }

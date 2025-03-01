@@ -168,43 +168,43 @@ public class ReanudarPartida extends javax.swing.JFrame {
     String CincoAzul = "\033[34m5\u001B[0m";
     for (int i = 0; i < botones.length; i++) {
       for (int j = 0; j < botones[0].length; j++) {
-        if (t.getTablero()[i][j].equals(red)) {
+        if (t.getFichas()[i][j].equals(red)) {
           vt.getBotones()[i][j].setBackground(new Color(255, 204, 204));
           vt.getBotones()[i][j].setText("R");
         }
-        if (t.getTablero()[i][j].equals(blue)) {
+        if (t.getFichas()[i][j].equals(blue)) {
           vt.getBotones()[i][j].setBackground(new Color(204, 204, 255));
           vt.getBotones()[i][j].setText("B");
         }
-        if (t.getTablero()[i][j].equals(Dosrojo)) {
+        if (t.getFichas()[i][j].equals(Dosrojo)) {
           vt.getBotones()[i][j].setBackground(new Color(255, 102, 102));
           vt.getBotones()[i][j].setText("2");
         }
-        if (t.getTablero()[i][j].equals(Dosazul)) {
+        if (t.getFichas()[i][j].equals(Dosazul)) {
           vt.getBotones()[i][j].setBackground(new Color(153, 153, 255));
           vt.getBotones()[i][j].setText("2");
         }
-        if (t.getTablero()[i][j].equals(TresRojo)) {
+        if (t.getFichas()[i][j].equals(TresRojo)) {
           vt.getBotones()[i][j].setBackground(new Color(255, 102, 102));
           vt.getBotones()[i][j].setText("3");
         }
-        if (t.getTablero()[i][j].equals(TresAzul)) {
+        if (t.getFichas()[i][j].equals(TresAzul)) {
           vt.getBotones()[i][j].setBackground(new Color(102, 102, 255));
           vt.getBotones()[i][j].setText("3");
         }
-        if (t.getTablero()[i][j].equals(CuatroRojo)) {
+        if (t.getFichas()[i][j].equals(CuatroRojo)) {
           vt.getBotones()[i][j].setText("4");
           vt.getBotones()[i][j].setBackground(new Color(204, 0, 0));
         }
-        if (t.getTablero()[i][j].equals(CuatroAzul)) {
+        if (t.getFichas()[i][j].equals(CuatroAzul)) {
           vt.getBotones()[i][j].setText("4");
           vt.getBotones()[i][j].setBackground(new Color(0, 0, 255));
         }
-        if (t.getTablero()[i][j].equals(CincoRojo)) {
+        if (t.getFichas()[i][j].equals(CincoRojo)) {
           vt.getBotones()[i][j].setBackground(new Color(153, 0, 0));
           vt.getBotones()[i][j].setText("5");
         }
-        if (t.getTablero()[i][j].equals(CincoAzul)) {
+        if (t.getFichas()[i][j].equals(CincoAzul)) {
           vt.getBotones()[i][j].setBackground(new Color(0, 0, 102));
           vt.getBotones()[i][j].setText("5");
         }

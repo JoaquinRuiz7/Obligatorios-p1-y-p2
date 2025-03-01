@@ -19,4 +19,9 @@ public class FichaAzul implements IFicha {
   public Color getColor(Tonalidad tonalidad) {
     return TONALIDAD_COLORES.get(tonalidad);
   }
+
+  @Override
+  public boolean esFichaNeutra() {
+    return false;
+  }
 }
