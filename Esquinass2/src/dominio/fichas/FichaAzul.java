@@ -4,8 +4,13 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FichaAzul implements IFicha {
+public class FichaAzul extends Ficha {
+  private static final ColorFicha COLOR = ColorFicha.AZUL;
   private static final Map<Tonalidad, Color> TONALIDAD_COLORES = new HashMap<>();
+
+  public FichaAzul() {
+    this.numero = 0;
+  }
 
   static {
     TONALIDAD_COLORES.put(Tonalidad.MUY_CLARA, new Color(204, 229, 255));
@@ -23,5 +28,10 @@ public class FichaAzul implements IFicha {
   @Override
   public boolean esFichaNeutra() {
     return false;
+  }
+
+  @Override
+  public ColorFicha getColorFicha() {
+    return COLOR;
   }
 }

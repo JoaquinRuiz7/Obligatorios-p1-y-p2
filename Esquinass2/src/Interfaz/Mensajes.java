@@ -60,24 +60,6 @@ public class Mensajes implements Serializable {
     return jugada;
   }
 
-  private static void mostrarTablero(Juego juego, String red, String blue) {
-    String[] AF = {"A", "B", "C", "D", "E", "F"};
-
-    System.out.println("  1  2  3  4  5  6");
-
-    for (int i = 0; i < juego.getTablero().getFichas().length; i++) {
-      System.out.print(AF[i]);
-      for (int j = 0; j < juego.getTablero().getFichas()[0].length; j++) {
-        if (juego.getTablero().getFichas()[i][j].endsWith("\u001B[0m")) {
-          System.out.print("|" + juego.getTablero().getFichas()[i][j] + "|");
-        } else {
-          System.out.print("|_|");
-        }
-      }
-      System.out.println();
-    }
-  }
-
   public static void posicionInvalida(VentanaTablero vt) {
     JOptionPane.showMessageDialog(
         vt,

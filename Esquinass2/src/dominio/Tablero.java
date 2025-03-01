@@ -1,14 +1,14 @@
 package dominio;
 
+import dominio.fichas.Ficha;
 import dominio.fichas.FichaNeutra;
-import dominio.fichas.IFicha;
 import java.io.Serializable;
 
 public class Tablero implements Serializable {
   private static final int TAMANO_TABLERO = 6;
-  private IFicha[][] fichas;
+  private Ficha[][] fichas;
 
-  public Tablero(IFicha[][] tablero) {
+  public Tablero(Ficha[][] tablero) {
     this.fichas = tablero;
   }
 
@@ -16,16 +16,16 @@ public class Tablero implements Serializable {
     this.setFichas(fichas);
   }
 
-  public IFicha[][] getFichas() {
+  public Ficha[][] getFichas() {
     return fichas;
   }
 
-  public void setFichas(IFicha[][] fichas) {
+  public void setFichas(Ficha[][] fichas) {
     this.fichas = fichas;
   }
 
   public void inicializar() {
-    IFicha[][] t = new IFicha[TAMANO_TABLERO][TAMANO_TABLERO];
+    Ficha[][] t = new Ficha[TAMANO_TABLERO][TAMANO_TABLERO];
     for (int i = 0; i < t.length; i++) {
       for (int j = 0; j < t[0].length; j++) {
         t[i][j] = new FichaNeutra();

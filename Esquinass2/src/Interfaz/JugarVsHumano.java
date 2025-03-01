@@ -4,7 +4,8 @@ import dominio.*;
 import dominio.fichas.FichaAzul;
 import dominio.fichas.FichaRoja;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -325,8 +326,12 @@ public class JugarVsHumano extends javax.swing.JFrame {
     tablero.inicializar();
     Mensajes mensajes = new Mensajes();
 
-    this.getJugador1().setFichas(Arrays.asList(new FichaRoja[25]));
-    this.getJuugador2().setFichas(Arrays.asList(new FichaAzul[25]));
+    this.getJugador1().setFichas(IntStream.range(0, 25)
+            .mapToObj(i -> new FichaRoja())
+            .collect(Collectors.toList()));
+    this.getJuugador2()
+        .setFichas(
+            IntStream.range(0, 25).mapToObj(i -> new FichaAzul()).collect(Collectors.toList()));
 
     juego.setJugador1(this.getJugador1());
     juego.setJugador2(this.getJuugador2());

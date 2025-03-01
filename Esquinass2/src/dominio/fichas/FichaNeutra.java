@@ -2,7 +2,7 @@ package dominio.fichas;
 
 import java.awt.*;
 
-public class FichaNeutra implements IFicha {
+public class FichaNeutra extends Ficha {
   @Override
   public Color getColor(Tonalidad tonalidad) {
     return null;
@@ -11,5 +11,10 @@ public class FichaNeutra implements IFicha {
   @Override
   public boolean esFichaNeutra() {
     return true;
+  }
+
+  @Override
+  public ColorFicha getColorFicha() {
+    return null;
   }
 }

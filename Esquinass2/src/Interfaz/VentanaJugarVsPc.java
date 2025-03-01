@@ -2,10 +2,14 @@ package Interfaz;
 
 import dominio.*;
 import dominio.fichas.ColorFicha;
+import dominio.fichas.Ficha;
 import dominio.fichas.FichaAzul;
 import dominio.fichas.FichaRoja;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -202,9 +206,15 @@ public class VentanaJugarVsPc extends javax.swing.JFrame implements Serializable
     }
 
     Jugador pc = new Jugador("Pc", 2, "La pc", ColorFicha.AZUL);
-    pc.setFichas(Arrays.asList(new FichaAzul[25]));
+    pc.setFichas(IntStream.range(0, 25)
+            .mapToObj(i -> new FichaAzul())
+            .collect(Collectors.toList()));
     Jugador jugador1 = (Jugador) jugadores.getSelectedValue();
-    jugador1.setFichas(Arrays.asList(new FichaRoja[25]));
+    List<Ficha> fichas = new ArrayList<>();
+    for (int i = 0; i < 25; i++) {
+      fichas.add(new FichaRoja());
+    }
+    jugador1.setFichas(fichas);
     Tablero tablero = new Tablero();
     Mensajes mensajes = new Mensajes();
     tablero.inicializar();

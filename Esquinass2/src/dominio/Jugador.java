@@ -1,9 +1,9 @@
 package dominio;
 
 import dominio.fichas.ColorFicha;
+import dominio.fichas.Ficha;
 import dominio.fichas.FichaAzul;
 import dominio.fichas.FichaRoja;
-import dominio.fichas.IFicha;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +15,7 @@ public class Jugador implements Comparable<Jugador>, Serializable {
   private int win;
   private int puntaje;
 
-  private List<IFicha> fichas;
+  private List<Ficha> fichas;
   private boolean abandono;
   private boolean humano;
   private int ultimaPosicionI = 0;
@@ -46,11 +46,11 @@ public class Jugador implements Comparable<Jugador>, Serializable {
     this.UltimaPosicionJ = UltimaPosicionJ;
   }
 
-  public List<IFicha> getFichas() {
+  public List<Ficha> getFichas() {
     return fichas;
   }
 
-  public void setFichas(List<IFicha> fichas) {
+  public void setFichas(List<Ficha> fichas) {
     this.fichas = fichas;
   }
 
