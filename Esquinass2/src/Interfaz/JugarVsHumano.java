@@ -3,6 +3,7 @@ package Interfaz;
 import dominio.*;
 import dominio.fichas.FichaAzul;
 import dominio.fichas.FichaRoja;
+import dominio.tablero.Tablero;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -82,7 +83,7 @@ public class JugarVsHumano extends javax.swing.JFrame {
     initComponents();
     this.setResizable(false);
     this.setIconImage(new ImageIcon(getClass().getResource("/Imagenes/icono7.png")).getImage());
-    this.setLocationRelativeTo(vm);
+    this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(0);
     this.setTitle("Modo Versus");
     this.setSize(940, 780);
@@ -326,9 +327,9 @@ public class JugarVsHumano extends javax.swing.JFrame {
     tablero.inicializar();
     Mensajes mensajes = new Mensajes();
 
-    this.getJugador1().setFichas(IntStream.range(0, 25)
-            .mapToObj(i -> new FichaRoja())
-            .collect(Collectors.toList()));
+    this.getJugador1()
+        .setFichas(
+            IntStream.range(0, 25).mapToObj(i -> new FichaRoja()).collect(Collectors.toList()));
     this.getJuugador2()
         .setFichas(
             IntStream.range(0, 25).mapToObj(i -> new FichaAzul()).collect(Collectors.toList()));

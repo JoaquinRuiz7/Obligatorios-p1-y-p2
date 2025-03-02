@@ -37,7 +37,7 @@ public class VentanaMenu extends javax.swing.JFrame {
     this.puedenJugar();
     this.setTitle("Esquinas 2");
 
-    this.setLocationRelativeTo(this);
+    this.setLocationRelativeTo(null);
   }
 
   @SuppressWarnings("unchecked")

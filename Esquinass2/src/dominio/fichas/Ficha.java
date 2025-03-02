@@ -6,7 +6,7 @@ public abstract class Ficha {
 
   protected int numero;
 
-  public abstract Color getColor(final Tonalidad tonalidad);
+  public abstract Color getColor();
 
   public abstract boolean esFichaNeutra();
 
@@ -20,7 +20,13 @@ public abstract class Ficha {
     this.numero = numero;
   }
 
-  public void aumentarNumero(int numero) {
-    this.numero += numero;
+  public void aumentarNumero() {
+    if (this.numero < 5) {
+      this.numero++;
+    }
+  }
+
+  private Tonalidad getTonalidadSegunNumero() {
+    return null;
   }
 }

@@ -14,6 +14,7 @@ public class Jugador implements Comparable<Jugador>, Serializable {
   private String alias;
   private int win;
   private int puntaje;
+  private int cantidadDeFichas;
 
   private List<Ficha> fichas;
   private boolean abandono;
@@ -21,6 +22,22 @@ public class Jugador implements Comparable<Jugador>, Serializable {
   private int ultimaPosicionI = 0;
   private int UltimaPosicionJ = 0;
   private int partidasPerdidas;
+
+  public Jugador(String Nombre, int edad, String alias, ColorFicha colorFicha) {
+    this.Nombre = Nombre;
+    this.edad = edad;
+    this.alias = alias;
+    this.win = 0;
+    this.puntaje = 0;
+    this.abandono = false;
+    this.humano = true;
+    this.fichas =
+        colorFicha.equals(ColorFicha.ROJO)
+            ? Arrays.asList(new FichaRoja[25])
+            : Arrays.asList(new FichaAzul[25]);
+    this.partidasPerdidas = 0;
+    this.cantidadDeFichas = 25;
+  }
 
   public int getPartidasPerdidas() {
     return partidasPerdidas;
@@ -54,19 +71,12 @@ public class Jugador implements Comparable<Jugador>, Serializable {
     this.fichas = fichas;
   }
 
-  public Jugador(String Nombre, int edad, String alias, ColorFicha colorFicha) {
-    this.Nombre = Nombre;
-    this.edad = edad;
-    this.alias = alias;
-    this.win = 0;
-    this.puntaje = 0;
-    this.abandono = false;
-    this.humano = true;
-    this.fichas =
-        colorFicha.equals(ColorFicha.ROJO)
-            ? Arrays.asList(new FichaRoja[25])
-            : Arrays.asList(new FichaAzul[25]);
-    this.partidasPerdidas = 0;
+  public int getCantidadDeFichas() {
+    return cantidadDeFichas;
+  }
+
+  public void setCantidadDeFichas(int cantidadDeFichas) {
+    this.cantidadDeFichas = cantidadDeFichas;
   }
 
   public boolean getAbandono() {
@@ -93,6 +103,7 @@ public class Jugador implements Comparable<Jugador>, Serializable {
     this.setWin(0);
     this.setHumano(true);
     this.setPartidasPerdidas(0);
+    this.cantidadDeFichas = 25;
   }
 
   public int getWin() {
@@ -157,7 +168,7 @@ public class Jugador implements Comparable<Jugador>, Serializable {
   }
 
   public boolean tieneFichas() {
-    return this.fichas != null && this.fichas.size() > 0;
+    return this.cantidadDeFichas > 0;
   }
 
   public void descontarFichas(final int cantidad) {
@@ -166,9 +177,7 @@ public class Jugador implements Comparable<Jugador>, Serializable {
     }
 
     for (int i = 0; i < cantidad; i++) {
-      if (this.fichas.size() >= cantidad) {
-        this.fichas.removeFirst();
-      }
+      this.cantidadDeFichas--;
     }
   }
 

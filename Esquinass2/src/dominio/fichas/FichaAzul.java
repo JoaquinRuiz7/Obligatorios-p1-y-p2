@@ -9,7 +9,7 @@ public class FichaAzul extends Ficha {
   private static final Map<Tonalidad, Color> TONALIDAD_COLORES = new HashMap<>();
 
   public FichaAzul() {
-    this.numero = 0;
+    this.numero = 1;
   }
 
   static {
@@ -21,8 +21,14 @@ public class FichaAzul extends Ficha {
   }
 
   @Override
-  public Color getColor(Tonalidad tonalidad) {
-    return TONALIDAD_COLORES.get(tonalidad);
+  public Color getColor() {
+    return switch (this.numero) {
+      case 2 -> TONALIDAD_COLORES.get(Tonalidad.CLARA);
+      case 3 -> TONALIDAD_COLORES.get(Tonalidad.MEDIA);
+      case 4 -> TONALIDAD_COLORES.get(Tonalidad.OSCURA);
+      case 5 -> TONALIDAD_COLORES.get(Tonalidad.MUY_OSCURA);
+      default -> TONALIDAD_COLORES.get(Tonalidad.MUY_CLARA);
+    };
   }
 
   @Override

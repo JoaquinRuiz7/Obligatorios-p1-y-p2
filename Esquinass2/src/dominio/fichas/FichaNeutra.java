@@ -3,8 +3,9 @@ package dominio.fichas;
 import java.awt.*;
 
 public class FichaNeutra extends Ficha {
+
   @Override
-  public Color getColor(Tonalidad tonalidad) {
+  public Color getColor() {
     return null;
   }
 

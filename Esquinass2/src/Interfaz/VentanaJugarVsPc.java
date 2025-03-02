@@ -5,6 +5,7 @@ import dominio.fichas.ColorFicha;
 import dominio.fichas.Ficha;
 import dominio.fichas.FichaAzul;
 import dominio.fichas.FichaRoja;
+import dominio.tablero.Tablero;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class VentanaJugarVsPc extends javax.swing.JFrame implements Serializable
     initComponents();
     this.setResizable(false);
     this.setIconImage(new ImageIcon(getClass().getResource("/Imagenes/icono7.png")).getImage());
-    this.setLocationRelativeTo(vm);
+    this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(0);
     this.setSize(740, 570);
     i = i;
@@ -206,9 +207,8 @@ public class VentanaJugarVsPc extends javax.swing.JFrame implements Serializable
     }
 
     Jugador pc = new Jugador("Pc", 2, "La pc", ColorFicha.AZUL);
-    pc.setFichas(IntStream.range(0, 25)
-            .mapToObj(i -> new FichaAzul())
-            .collect(Collectors.toList()));
+    pc.setFichas(
+        IntStream.range(0, 25).mapToObj(i -> new FichaAzul()).collect(Collectors.toList()));
     Jugador jugador1 = (Jugador) jugadores.getSelectedValue();
     List<Ficha> fichas = new ArrayList<>();
     for (int i = 0; i < 25; i++) {

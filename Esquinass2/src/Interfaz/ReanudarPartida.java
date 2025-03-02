@@ -1,6 +1,7 @@
 package Interfaz;
 
 import dominio.*;
+import dominio.tablero.Tablero;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;

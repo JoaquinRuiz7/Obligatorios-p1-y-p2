@@ -2,6 +2,7 @@ package esquinas2;
 
 import Interfaz.*;
 import dominio.Sistema;
+import javax.swing.*;
 
 // 4876 lineas de codigo.
 

@@ -1,4 +1,4 @@
-package dominio;
+package dominio.tablero;
 
 import dominio.fichas.Ficha;
 import dominio.fichas.FichaNeutra;
@@ -25,16 +25,12 @@ public class Tablero implements Serializable {
   }
 
   public void inicializar() {
-    Ficha[][] t = new Ficha[TAMANO_TABLERO][TAMANO_TABLERO];
-    for (int i = 0; i < t.length; i++) {
-      for (int j = 0; j < t[0].length; j++) {
-        t[i][j] = new FichaNeutra();
+    Ficha[][] tablero = new Ficha[TAMANO_TABLERO][TAMANO_TABLERO];
+    for (int i = 0; i < tablero.length; i++) {
+      for (int j = 0; j < tablero[0].length; j++) {
+        tablero[i][j] = new FichaNeutra();
       }
     }
-    this.setFichas(t);
-  }
-
-  public boolean isPositionTaken(int x, int y) {
-    return this.fichas[x][y] != null;
+    this.setFichas(tablero);
   }
 }

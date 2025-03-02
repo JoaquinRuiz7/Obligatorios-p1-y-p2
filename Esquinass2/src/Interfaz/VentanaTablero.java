@@ -181,7 +181,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
     this.system = sistema;
     this.nombreCancion = music;
     this.juego = juego;
-    this.getJuego().setVt(this);
+    this.getJuego().setVentanaTablero(this);
     this.cambio = false;
     this.setTitle(
         getJuego().getJugador1().getNombre() + " VS " + getJuego().getJugador2().getNombre());
@@ -733,13 +733,13 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
       quienJuega.setText(getJuego().getJugadorActual().getAlias());
       cubos.setText(getJuego().getJugadorActual().getFichasRestantes() + "");
       if (this.getJuego().getJugadorActual().equals(this.getJuego().getJugador1())) {
-        getJuego().colocarFicha(reanudada, pj, red, blue, fila, columna);
+        getJuego().colocarFicha(reanudada, pj, fila, columna);
         if (this.getJuego().getJugadorActual().equals(this.getJuego().getJugador2()) && tiem) {
           this.ppt.reiniciarTiempo();
         }
       } else {
 
-        getJuego().colocarFicha(reanudada, pj, red, blue, fila, columna);
+        getJuego().colocarFicha(reanudada, pj, fila, columna);
 
         if (this.getJuego().getJugadorActual().equals(this.getJuego().getJugador1()) && tiem) {
           this.ppt.reiniciarTiempo();
@@ -838,7 +838,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
 
       quienJuega.setText(getJuego().getJugadorActual().getAlias());
       cubos.setText(getJuego().getJugadorActual().getFichasRestantes() + "");
-      getJuego().colocarFicha(reanudada, pj, red, blue, fila, columna);
+      getJuego().colocarFicha(reanudada, pj, fila, columna);
       if (!getJuego().getJugadorActual().isHumano() && tiem) {
         this.ppt.reiniciarTiempo();
       }
@@ -855,7 +855,7 @@ public class VentanaTablero extends javax.swing.JFrame implements Serializable {
       cubos.setText(getJuego().getJugadorActual().getFichasRestantes() + "");
       if (getJuego().getJugador1().tieneFichas() && !getJuego().getJugadorActual().isHumano()) {
 
-        getJuego().colocarFicha(reanudada, pj, red, blue, fila, columna);
+        getJuego().colocarFicha(reanudada, pj, fila, columna);
         if (tiem) {
           this.ppt.reiniciarTiempo();
         }
