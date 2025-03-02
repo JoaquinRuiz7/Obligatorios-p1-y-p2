@@ -14,7 +14,16 @@ public class Reglas {
     {{0, 1}, {1, 0}}, // Esquina inferior derecha
     // Ficha colocada abajo
     {{-1, 0}, {-1, -1}},
-    {{-1, 0}, {-1, 1}}
+    {{-1, 0}, {-1, 1}},
+    // Ficha colocada arriba
+    {{1, 0}, {1, -1}},
+    {{1, 0}, {1, 1}},
+    // Ficha colocada lateral derecho
+    {{0, -1}, {-1, -1}},
+    {{0, -1}, {1, -1}},
+    // Ficha colocada lateral izquierdo
+    {{0, 1}, {-1, 1}},
+    {{0, 1}, {1, 1}}
   };
 
   public int getCantidadDeEsquinasFormadas(Ficha[][] tablero, int fila, int columna) {
