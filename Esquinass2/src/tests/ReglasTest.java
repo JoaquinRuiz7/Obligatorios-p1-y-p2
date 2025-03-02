@@ -78,4 +78,12 @@ public class ReglasTest {
     int result = reglas.getCantidadDeEsquinasFormadas(tablero, 1, 0);
     Assert.assertEquals(1, result);
   }
+
+  @Test
+  public void formaEsquinaEnElBordeDelTablero() {
+    tablero[0][1] = new FichaRoja();
+    tablero[1][0] = new FichaRoja();
+    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 0, 0);
+    Assert.assertEquals(1, result);
+  }
 }
