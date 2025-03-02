@@ -202,36 +202,17 @@ public class Juego implements Serializable {
       if (sePuedeColocarFicha) {
         Jugador jugadorActual = this.getJugadorActual();
 
-        if (jugadorActual.equals(this.getJugador1())) {
+        Ficha ficha = this.getJugadorActual().getFichas().get(0);
+        this.getTablero().getFichas()[fila][columna] = ficha;
 
-          Ficha ficha = this.getJugadorActual().getFichas().get(0);
-          this.getTablero().getFichas()[fila][columna] = ficha;
+        this.getJugadorActual().descontarFichas(1);
+        this.actualizarBoton(
+            this.getVentanaTablero().getBotones()[PosicionI][PosicionJ],
+            jugadorActual.getFichas().get(0).getColor(),
+            this.getJugadorActual().equals(jugador1) ? "R" : "A");
 
-          // Rojo
-          this.getJugadorActual().descontarFichas(1);
-          // rojo
-          this.actualizarBoton(
-              this.getVentanaTablero().getBotones()[PosicionI][PosicionJ],
-              jugadorActual.getFichas().get(0).getColor(),
-              "R");
-
-          formaEsquina(PosicionJ, PosicionI);
-          alargoEsquina(PosicionI, PosicionJ, this.getTablero());
-
-        } else {
-          Ficha ficha = this.getJugadorActual().getFichas().get(0);
-          this.getTablero().getFichas()[fila][columna] = ficha;
-          // Azul
-          this.getJugadorActual().descontarFichas(1);
-
-          this.getVentanaTablero()
-              .getBotones()[PosicionI][PosicionJ]
-              .setBackground(jugadorActual.getFichas().get(0).getColor());
-          this.getVentanaTablero().getBotones()[PosicionI][PosicionJ].setText("A");
-          this.getVentanaTablero().getBotones()[PosicionI][PosicionJ].repaint();
-          formaEsquina(PosicionJ, PosicionI);
-          alargoEsquina(PosicionI, PosicionJ, this.getTablero());
-        }
+        formaEsquina(PosicionJ, PosicionI);
+        alargoEsquina(PosicionI, PosicionJ, this.getTablero());
       }
 
       this.getMensajes().jugoEn(jugada, this.getJugadorActual());
