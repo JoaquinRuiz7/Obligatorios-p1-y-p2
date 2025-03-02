@@ -10,7 +10,7 @@ import org.junit.Test;
 public class ReglasTest {
 
   @Test
-  public void testFormoEsquina() {
+  public void testFichaForma4Esquinas() {
     Ficha[][] tablero = new Ficha[6][6];
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 6; j++) {
