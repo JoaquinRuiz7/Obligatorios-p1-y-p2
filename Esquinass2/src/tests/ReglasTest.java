@@ -4,8 +4,6 @@ import dominio.fichas.Ficha;
 import dominio.fichas.FichaNeutra;
 import dominio.fichas.FichaRoja;
 import dominio.juego.Reglas;
-import dominio.tablero.Coordenada;
-import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,7 +23,7 @@ public class ReglasTest {
     tablero[2][1] = new FichaRoja();
 
     Reglas reglas = new Reglas();
-    List<Coordenada> result = reglas.getCoordenadasDondeFormoEsquina(tablero, 1, 1);
-    Assert.assertTrue(result.size() > 0);
+    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 1, 1);
+    Assert.assertEquals(4, result);
   }
 }
