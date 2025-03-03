@@ -1,6 +1,10 @@
 package dominio;
 
 import Interfaz.*;
+import dominio.fichas.ColorFicha;
+import dominio.fichas.Ficha;
+import dominio.fichas.FichaAzul;
+import dominio.tablero.Tablero;
 import java.awt.*;
 import java.awt.Color;
 import java.io.Serializable;
@@ -13,7 +17,7 @@ public class Juego implements Serializable {
   private Mensajes mensajes;
   private Tablero tablero;
   private Jugador jugadorActual;
-  private VentanaTablero vt;
+  private VentanaTablero ventanaTablero;
 
   public Juego(
       Sistema sistema,
@@ -35,7 +39,7 @@ public class Juego implements Serializable {
     this.setMensajes(mensajes);
     this.setTablero(tablero);
     this.setJugadorActual(jugadorActual);
-    this.setVt(vt);
+    this.setVentanaTablero(ventanaTablero);
   }
 
   public Jugador getJugadorActual() {
@@ -78,55 +82,34 @@ public class Juego implements Serializable {
     this.tablero = tablero;
   }
 
-  private void ganoAlAbandonar(Jugador jugador) {
-    if (this.getJugadorActual().equals(this.getJugador1())) {
-      this.getJugadorActual().setCubos(0);
-      this.getJugadorActual().setAbandono(true);
-      this.getJugador2().setWin(this.getJugador2().getWin() + 1);
-    } else {
-      this.getJugadorActual().setCubos(0);
-      this.getJugadorActual().setAbandono(true);
-      this.getJugador1().setWin(this.getJugador1().getWin() + 1);
-    }
-  }
-
-  public void ponePc(int i, int j, Tablero t, String red, String blue, boolean pj) {
-    String reset = "\u001B[0m";
+  public void ponePc(int i, int j, Tablero t, boolean pj) {
     int pI = 0;
     int pJ = 0;
     String letra = "";
-    String[][] ta = t.getTablero();
-    String Dosrojo = "\u001B[31m2\u001B[0m";
-    String Dosazul = "\033[34m2\u001B[0m";
-    String TresRojo = "\u001B[31m3\u001B[0m";
-    String TresAzul = "\033[34m3\u001B[0m";
-    String CuatroRojo = "\u001B[31m4\u001B[0m";
-    String CuatroAzul = "\033[34m4\u001B[0m";
-    String CincoRojo = "\u001B[31m5\u001B[0m";
-    String CincoAzul = "\033[34m5\u001B[0m";
+    Ficha[][] ta = t.getFichas();
     if (!pj) {
       pI = i;
       pJ = j;
 
       if (!pj) {
         if (pI > 0 && pI < 5 && (pJ < 5 && pJ > 0)) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 0) {
-          ta[pI + 1][pJ] = blue;
+          ta[pI + 1][pJ] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 5) {
-          ta[pI - 1][pJ] = blue;
+          ta[pI - 1][pJ] = this.getJugadorActual().getFichas().get(0);
         } else if (pJ == 0) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pJ == 5) {
-          ta[pI][pJ - 1] = blue;
+          ta[pI][pJ - 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 0 && pJ == 0) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 0 && pJ == 5) {
-          ta[pI][pJ - 1] = blue;
+          ta[pI][pJ - 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 5 && pJ == 0) {
-          ta[pI][pJ + 1] = blue;
+          ta[pI][pJ + 1] = this.getJugadorActual().getFichas().get(0);
         } else if (pI == 5 && pJ == 5) {
-          ta[pI][pJ - 1] = blue;
+          ta[pI][pJ - 1] = this.getJugadorActual().getFichas().get(0);
         }
       }
     } else {
@@ -137,18 +120,13 @@ public class Juego implements Serializable {
       for (int k = 0; k < ta.length; k++) {
         for (int l = 0; l < ta[0].length; l++) {
 
-          if (this.ahiSi(k, l, this.getTablero(), red, blue)
-              && this.validarPosicion(k, l, tablero, red, blue)
-              && this.noEsCuadrado(k, l, this.getTablero(), red, blue)) {
-            if (this.cuentaEsquina(this.getJugadorActual(), l, k, red, blue)
-                    + this.cuentaAlargoEsquina(
-                        k, l, this.getJugadorActual(), this.getTablero(), red, blue)
+          if (this.ahiSi(k, l, this.getTablero())
+              && this.validarPosicion(k, l, tablero)
+              && this.noEsCuadrado(k, l, this.getTablero())) {
+            if (this.cuentaEsquina(l, k) + this.cuentaAlargoEsquina(k, l, this.getTablero())
                 > maximo) {
 
-              maximo =
-                  this.cuentaEsquina(this.getJugadorActual(), l, k, red, blue)
-                      + this.cuentaAlargoEsquina(
-                          k, l, this.getJugadorActual(), this.getTablero(), red, blue);
+              maximo = this.cuentaEsquina(l, k) + this.cuentaAlargoEsquina(k, l, this.getTablero());
               posI = k;
               posJ = l;
             }
@@ -157,12 +135,10 @@ public class Juego implements Serializable {
       }
       for (int k = 0; k < ta.length; k++) {
         for (int l = 0; l < ta[0].length; l++) {
-          if (this.ahiSi(k, l, this.getTablero(), red, blue)
-              && this.validarPosicion(k, l, tablero, red, blue)
-              && this.noEsCuadrado(k, l, this.getTablero(), red, blue)) {
-            if (this.cuentaEsquina(this.getJugadorActual(), l, k, red, blue)
-                    + this.cuentaAlargoEsquina(
-                        k, l, this.getJugadorActual(), this.getTablero(), red, blue)
+          if (this.ahiSi(k, l, this.getTablero())
+              && this.validarPosicion(k, l, tablero)
+              && this.noEsCuadrado(k, l, this.getTablero())) {
+            if (this.cuentaEsquina(l, k) + this.cuentaAlargoEsquina(k, l, this.getTablero())
                 == maximo) {
 
               if (posI > k) {
@@ -181,9 +157,9 @@ public class Juego implements Serializable {
       if (maximo == 0) {
         for (int k = 0; k < ta.length; k++) {
           for (int l = 0; l < ta[0].length; l++) {
-            if (this.ahiSi(k, l, this.getTablero(), red, blue)
-                && this.validarPosicion(k, l, tablero, red, blue)
-                && this.noEsCuadrado(k, l, this.getTablero(), red, blue)) {
+            if (this.ahiSi(k, l, this.getTablero())
+                && this.validarPosicion(k, l, tablero)
+                && this.noEsCuadrado(k, l, this.getTablero())) {
               posI = k;
               posJ = l;
             }
@@ -191,31 +167,31 @@ public class Juego implements Serializable {
         }
       }
 
-      ta[posI][posJ] = blue;
-      this.getJugadorActual().setCubos(this.getJugadorActual().getCubos() - 1);
-      this.actualizarBoton(this.getVt().getBotones()[posI][posJ], new Color(204, 204, 255), "A");
+      ta[posI][posJ] = this.getJugadorActual().getFichas().get(0);
+      this.getJugadorActual().descontarFichas(1);
+      this.actualizarBoton(
+          this.getVentanaTablero().getBotones()[posI][posJ], new FichaAzul().getColor(), "A");
 
       this.numeroALetra(posI, false, false);
       letra = this.numeroALetra(posI, false, false);
       this.getMensajes().jugoEn(letra + (posJ + 1), this.getJugadorActual());
-      this.formaEsquina(this.getJugadorActual(), posJ, posI, red, blue);
-      this.alargoEsquina(posI, posJ, this.getJugadorActual(), this.getTablero(), red, blue);
+      this.formaEsquina(posJ, posI);
+      this.alargoEsquina(posI, posJ, this.getTablero());
     }
   }
 
-  public void colocarFicha(
-      boolean reanudada, boolean primeraJugada, String red, String blue, int fila, int columna) {
+  public void colocarFicha(boolean reanudada, boolean primeraJugada, int fila, int columna) {
     int PosicionI = fila;
     int PosicionJ = columna;
-    boolean Podes = false;
+    boolean sePuedeColocarFicha = false;
     String jugada = "";
     if (this.getJugadorActual().isHumano()) {
 
-      Podes = ahiSi(PosicionI, PosicionJ, this.getTablero(), red, blue);
-      if ((Podes && primeraJugada) || (reanudada && Podes)) {
-        Podes = validarPosicion(PosicionI, PosicionJ, this.getTablero(), red, blue);
-        if (Podes) {
-          Podes = noEsCuadrado(PosicionI, PosicionJ, this.getTablero(), red, blue);
+      sePuedeColocarFicha = ahiSi(PosicionI, PosicionJ, this.getTablero());
+      if ((sePuedeColocarFicha && primeraJugada) || (reanudada && sePuedeColocarFicha)) {
+        sePuedeColocarFicha = validarPosicion(PosicionI, PosicionJ, this.getTablero());
+        if (sePuedeColocarFicha) {
+          sePuedeColocarFicha = noEsCuadrado(PosicionI, PosicionJ, this.getTablero());
         }
       }
 
@@ -223,33 +199,20 @@ public class Juego implements Serializable {
       this.getJugador1().setUltimaPosicionJ(PosicionJ);
 
       // Aca es donde se coloca la ficha en la posicion tablero[PosicionI][PosicionJ]
-      if (Podes) {
-        if (this.getJugadorActual().equals(this.getJugador1())) {
-          // Rojo
-          this.getTablero().getTablero()[PosicionI][PosicionJ] = red;
-          this.getJugadorActual().setCubos(this.getJugadorActual().getCubos() - 1);
+      if (sePuedeColocarFicha) {
+        Jugador jugadorActual = this.getJugadorActual();
 
-          // rojo
+        Ficha ficha = this.getJugadorActual().getFichas().get(0);
+        this.getTablero().getFichas()[fila][columna] = ficha;
 
-          this.actualizarBoton(
-              this.getVt().getBotones()[PosicionI][PosicionJ], new Color(255, 204, 204), "R");
+        this.getJugadorActual().descontarFichas(1);
+        this.actualizarBoton(
+            this.getVentanaTablero().getBotones()[PosicionI][PosicionJ],
+            jugadorActual.getFichas().get(0).getColor(),
+            this.getJugadorActual().equals(jugador1) ? "R" : "A");
 
-          formaEsquina(this.getJugadorActual(), PosicionJ, PosicionI, red, blue);
-          alargoEsquina(
-              PosicionI, PosicionJ, this.getJugadorActual(), this.getTablero(), red, blue);
-
-        } else {
-          // Azul
-          this.getTablero().getTablero()[PosicionI][PosicionJ] = blue;
-          this.getJugadorActual().setCubos(this.getJugadorActual().getCubos() - 1);
-
-          this.getVt().getBotones()[PosicionI][PosicionJ].setBackground(new Color(204, 204, 255));
-          this.getVt().getBotones()[PosicionI][PosicionJ].setText("A");
-          this.getVt().getBotones()[PosicionI][PosicionJ].repaint();
-          formaEsquina(this.getJugadorActual(), PosicionJ, PosicionI, red, blue);
-          alargoEsquina(
-              PosicionI, PosicionJ, this.getJugadorActual(), this.getTablero(), red, blue);
-        }
+        formaEsquina(PosicionJ, PosicionI);
+        alargoEsquina(PosicionI, PosicionJ, this.getTablero());
       }
 
       this.getMensajes().jugoEn(jugada, this.getJugadorActual());
@@ -259,15 +222,13 @@ public class Juego implements Serializable {
           this.getJugador1().getUltimaPosicionI(),
           this.getJugador1().getUltimaPosicionJ(),
           this.getTablero(),
-          red,
-          blue,
           primeraJugada);
       this.setJugadorActual(this.getJugador1());
     }
 
-    if (this.getJugadorActual().equals(this.getJugador1()) && Podes) {
+    if (this.getJugadorActual().equals(this.getJugador1()) && sePuedeColocarFicha) {
       this.setJugadorActual(this.getJugador2());
-    } else if (this.getJugadorActual().equals(this.getJugador2()) && Podes) {
+    } else if (this.getJugadorActual().equals(this.getJugador2()) && sePuedeColocarFicha) {
 
       this.setJugadorActual(this.getJugador1());
     }
@@ -303,19 +264,14 @@ public class Juego implements Serializable {
     return letra;
   }
 
-  private int cuentaAlargoEsquina(
-      int i, int j, Jugador jugadorActual, Tablero tab, String red, String blue) {
-    String reset = "\u001B[0m";
-    String letra = "";
+  private int cuentaAlargoEsquina(int i, int j, Tablero tab) {
     int alargadas = 0;
     boolean meVoy = false;
-    String cincoRojo = "\u001B[31m5\u001B[0m";
-    String cincoAzul = "\033[34m5\u001B[0m";
-    String[] fila = tab.getTablero()[i];
+    Ficha[] fila = tab.getFichas()[i];
     int contador = 0;
 
     for (int k = (j + 1); k < fila.length; k++) {
-      if (fila[k].endsWith(reset)) {
+      if (!fila[k].esFichaNeutra()) {
         contador++;
       } else {
         contador = 0;
@@ -323,24 +279,24 @@ public class Juego implements Serializable {
       }
       if (i == 0) {
         if ((!meVoy)
-            && (contador > 2 && fila[k].endsWith(reset))
-            && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-            && (this.getTablero().getTablero()[i + 1][k].endsWith(reset))) {
+            && (contador > 2 && !fila[k].esFichaNeutra())
+            && (!(fila[k].getNumero() == 5))
+            && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra())) {
           alargadas++;
         }
       } else if (i < 5 && i > 0) {
         if ((!meVoy)
-            && (contador > 2 && fila[k].endsWith(reset))
-            && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-            && (this.getTablero().getTablero()[i + 1][k].endsWith(reset)
-                || this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
+            && (contador > 2 && !fila[k].esFichaNeutra())
+            && (!(fila[k].getNumero() == 5))
+            && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra()
+                || !this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
           alargadas++;
         }
       } else if (i == 5) {
         if ((!meVoy)
-            && (contador > 2 && fila[k].endsWith(reset))
-            && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-            && (this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
+            && (contador > 2 && fila[k].esFichaNeutra())
+            && (!(fila[k].getNumero() == 5))
+            && (!this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
           alargadas++;
         }
       }
@@ -348,7 +304,7 @@ public class Juego implements Serializable {
     contador = 0;
     meVoy = false;
     for (int k = (j - 1); k >= 0; k--) {
-      if (fila[k].endsWith(reset)) {
+      if (!fila[k].esFichaNeutra()) {
         contador++;
       } else {
         contador = 0;
@@ -356,24 +312,24 @@ public class Juego implements Serializable {
       }
       if (i == 0) {
         if ((!meVoy)
-            && (contador > 2 && fila[k].endsWith(reset))
-            && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-            && (this.getTablero().getTablero()[i + 1][k].endsWith(reset))) {
+            && (contador > 2 && !fila[k].esFichaNeutra())
+            && (!(fila[k].getNumero() == 5))
+            && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra())) {
           alargadas++;
         }
       } else if (i > 0 && i < 5) {
         if ((!meVoy)
-            && (contador > 2 && fila[k].endsWith(reset))
-            && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-            && (this.getTablero().getTablero()[i + 1][k].endsWith(reset)
-                || this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
+            && (contador > 2 && !fila[k].esFichaNeutra())
+            && (!(fila[k].getNumero() == 5))
+            && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra()
+                || !this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
           alargadas++;
         }
       } else if (i == 5) {
         if ((!meVoy)
-            && (contador > 2 && fila[k].endsWith(reset))
-            && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-            && (this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
+            && (contador > 2 && !fila[k].esFichaNeutra())
+            && (!(fila[k].getNumero() == 5))
+            && (!this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
           alargadas++;
         }
       }
@@ -381,8 +337,8 @@ public class Juego implements Serializable {
     contador = 0;
     meVoy = false;
 
-    for (int k = (i + 1); k < this.getTablero().getTablero().length; k++) {
-      if (this.getTablero().getTablero()[k][j].endsWith(reset)) {
+    for (int k = (i + 1); k < this.getTablero().getFichas().length; k++) {
+      if (!this.getTablero().getFichas()[k][j].esFichaNeutra()) {
         contador++;
       } else {
         contador = 0;
@@ -391,27 +347,24 @@ public class Juego implements Serializable {
 
       if (j > 0 & j < 5) {
         if ((!meVoy)
-            && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-            && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-            && (this.getTablero().getTablero()[k][j + 1].endsWith(reset)
-                || this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
+            && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+            && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+            && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra()
+                || !this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
           alargadas++;
         }
       } else if (j == 0) {
         if ((!meVoy)
-            && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-            && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-            && (this.getTablero().getTablero()[k][j + 1].endsWith(reset))) {
+            && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+            && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+            && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra())) {
           alargadas++;
         }
       } else if (j == 5) {
         if ((!meVoy)
-            && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-            && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-            && (this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
+            && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+            && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+            && (!this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
           alargadas++;
         }
       }
@@ -420,7 +373,7 @@ public class Juego implements Serializable {
     meVoy = false;
     for (int k = (i - 1); k >= 0; k--) {
 
-      if (this.getTablero().getTablero()[k][j].endsWith(reset)) {
+      if (!this.getTablero().getFichas()[k][j].esFichaNeutra()) {
         contador++;
       } else {
         contador = 0;
@@ -428,29 +381,26 @@ public class Juego implements Serializable {
       }
       if (j > 0 && j < 5) {
         if ((!meVoy)
-            && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-            && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-            && (this.getTablero().getTablero()[k][j + 1].endsWith(reset)
-                || this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
+            && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+            && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+            && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra()
+                || !this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
           alargadas++;
         }
 
       } else if (j == 0) {
         if ((!meVoy)
-            && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-            && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-            && (this.getTablero().getTablero()[k][j + 1].endsWith(reset))) {
+            && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+            && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+            && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra())) {
           alargadas++;
         }
 
       } else if (j == 5) {
         if ((!meVoy)
-            && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-            && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-            && (this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
+            && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+            && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+            && (!this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
           alargadas++;
         }
       }
@@ -458,19 +408,16 @@ public class Juego implements Serializable {
     return alargadas;
   }
 
-  private void alargoEsquina(
-      int i, int j, Jugador jugadorActual, Tablero tab, String red, String blue) {
+  private void alargoEsquina(int i, int j, Tablero tab) {
     ArrayList<String> dondeAlargo = new ArrayList<>();
-    String reset = "\u001B[0m";
     String letra = "";
     boolean meVoy = false;
-    String cincoRojo = "\u001B[31m5\u001B[0m";
-    String cincoAzul = "\033[34m5\u001B[0m";
-    String[] fila = tab.getTablero()[i];
+
+    Ficha[] fila = tab.getFichas()[i];
     int contador = 0;
-    if (this.getJugadorActual().getCubos() > 0) {
+    if (this.getJugadorActual().tieneFichas()) {
       for (int k = j; k < fila.length; k++) {
-        if (fila[k].endsWith(reset)) {
+        if (!fila[k].esFichaNeutra()) {
           contador++;
         } else {
           contador = 0;
@@ -478,10 +425,10 @@ public class Juego implements Serializable {
         }
         if (i == 0) {
           if ((!meVoy)
-              && (contador > 2 && fila[k].endsWith(reset))
-              && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-              && (this.getTablero().getTablero()[i + 1][k].endsWith(reset))) {
-            numeroColor(red, blue, i, k, this.getJugadorActual());
+              && (contador > 2 && !fila[k].esFichaNeutra())
+              && (!(fila[k].getNumero() == 5))
+              && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra())) {
+            setearEsquina(i, k, this.getJugadorActual());
             letra = numeroALetra(i, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, k);
@@ -489,11 +436,11 @@ public class Juego implements Serializable {
 
         } else if (i < 5 && i > 0) {
           if ((!meVoy)
-              && (contador > 2 && fila[k].endsWith(reset))
-              && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-              && (this.getTablero().getTablero()[i + 1][k].endsWith(reset)
-                  || this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
-            numeroColor(red, blue, i, k, this.getJugadorActual());
+              && (contador > 2 && !fila[k].esFichaNeutra())
+              && (!(fila[k].getNumero() == 5))
+              && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra()
+                  || !this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
+            setearEsquina(i, k, this.getJugadorActual());
             letra = numeroALetra(i, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, k);
@@ -501,10 +448,10 @@ public class Juego implements Serializable {
 
         } else if (i == 5) {
           if ((!meVoy)
-              && (contador > 2 && fila[k].endsWith(reset))
-              && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-              && (this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
-            numeroColor(red, blue, i, k, this.getJugadorActual());
+              && (contador > 2 && !fila[k].esFichaNeutra())
+              && (!(fila[k].getNumero() == 5))
+              && (!this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
+            setearEsquina(i, k, this.getJugadorActual());
             letra = numeroALetra(i, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, k);
@@ -514,7 +461,7 @@ public class Juego implements Serializable {
       contador = 0;
       meVoy = false;
       for (int k = j; k >= 0; k--) {
-        if (fila[k].endsWith(reset)) {
+        if (!fila[k].esFichaNeutra()) {
           contador++;
         } else {
           contador = 0;
@@ -522,10 +469,10 @@ public class Juego implements Serializable {
         }
         if (i == 0) {
           if ((!meVoy)
-              && (contador > 2 && fila[k].endsWith(reset))
-              && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-              && (this.getTablero().getTablero()[i + 1][k].endsWith(reset))) {
-            numeroColor(red, blue, i, k, this.getJugadorActual());
+              && (contador > 2 && !fila[k].esFichaNeutra())
+              && (!fila[k].esFichaNeutra())
+              && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra())) {
+            setearEsquina(i, k, this.getJugadorActual());
             letra = numeroALetra(i, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, k);
@@ -533,11 +480,11 @@ public class Juego implements Serializable {
 
         } else if (i > 0 && i < 5) {
           if ((!meVoy)
-              && (contador > 2 && fila[k].endsWith(reset))
-              && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-              && (this.getTablero().getTablero()[i + 1][k].endsWith(reset)
-                  || this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
-            numeroColor(red, blue, i, k, this.getJugadorActual());
+              && (contador > 2 && !fila[k].esFichaNeutra())
+              && (!(fila[k].getNumero() == 5))
+              && (!this.getTablero().getFichas()[i + 1][k].esFichaNeutra()
+                  || !this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
+            setearEsquina(i, k, this.getJugadorActual());
             letra = numeroALetra(i, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, k);
@@ -545,10 +492,10 @@ public class Juego implements Serializable {
 
         } else if (i == 5) {
           if ((!meVoy)
-              && (contador > 2 && fila[k].endsWith(reset))
-              && (!fila[k].equals(cincoRojo) && !fila[k].equals(cincoAzul))
-              && (this.getTablero().getTablero()[i - 1][k].endsWith(reset))) {
-            numeroColor(red, blue, i, k, this.getJugadorActual());
+              && (contador > 2 && !fila[k].esFichaNeutra())
+              && (!(fila[k].getNumero() == 5))
+              && (!this.getTablero().getFichas()[i - 1][k].esFichaNeutra())) {
+            setearEsquina(i, k, this.getJugadorActual());
             letra = numeroALetra(i, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, k);
@@ -558,8 +505,8 @@ public class Juego implements Serializable {
       contador = 0;
       meVoy = false;
 
-      for (int k = i; k < this.getTablero().getTablero().length; k++) {
-        if (this.getTablero().getTablero()[k][j].endsWith(reset)) {
+      for (int k = i; k < this.getTablero().getFichas().length; k++) {
+        if (!this.getTablero().getFichas()[k][j].esFichaNeutra()) {
           contador++;
         } else {
           contador = 0;
@@ -568,12 +515,11 @@ public class Juego implements Serializable {
 
         if (j > 0 & j < 5) {
           if ((!meVoy)
-              && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-              && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                  && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-              && (this.getTablero().getTablero()[k][j + 1].endsWith(reset)
-                  || this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
-            numeroColor(red, blue, k, j, this.getJugadorActual());
+              && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+              && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+              && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra()
+                  || !this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
+            setearEsquina(k, j, this.getJugadorActual());
             letra = numeroALetra(k, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, j);
@@ -581,22 +527,20 @@ public class Juego implements Serializable {
 
         } else if (j == 0) {
           if ((!meVoy)
-              && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-              && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                  && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-              && (this.getTablero().getTablero()[k][j + 1].endsWith(reset))) {
-            numeroColor(red, blue, k, j, this.getJugadorActual());
+              && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+              && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+              && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra())) {
+            setearEsquina(k, j, this.getJugadorActual());
             letra = numeroALetra(k, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, j);
           }
         } else if (j == 5) {
           if ((!meVoy)
-              && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-              && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                  && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-              && (this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
-            numeroColor(red, blue, k, j, this.getJugadorActual());
+              && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+              && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+              && (!this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
+            setearEsquina(k, j, this.getJugadorActual());
             letra = numeroALetra(k, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, j);
@@ -607,7 +551,7 @@ public class Juego implements Serializable {
       meVoy = false;
       for (int k = i; k >= 0; k--) {
 
-        if (this.getTablero().getTablero()[k][j].endsWith(reset)) {
+        if (!this.getTablero().getFichas()[k][j].esFichaNeutra()) {
           contador++;
         } else {
           contador = 0;
@@ -615,12 +559,11 @@ public class Juego implements Serializable {
         }
         if (j > 0 && j < 5) {
           if ((!meVoy)
-              && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-              && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                  && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-              && (this.getTablero().getTablero()[k][j + 1].endsWith(reset)
-                  || this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
-            numeroColor(red, blue, k, j, this.getJugadorActual());
+              && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+              && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+              && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra()
+                  || !this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
+            setearEsquina(k, j, this.getJugadorActual());
             letra = numeroALetra(k, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, j);
@@ -628,11 +571,10 @@ public class Juego implements Serializable {
 
         } else if (j == 0) {
           if ((!meVoy)
-              && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-              && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                  && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-              && (this.getTablero().getTablero()[k][j + 1].endsWith(reset))) {
-            numeroColor(red, blue, k, j, this.getJugadorActual());
+              && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+              && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+              && (!this.getTablero().getFichas()[k][j + 1].esFichaNeutra())) {
+            setearEsquina(k, j, this.getJugadorActual());
             letra = numeroALetra(k, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, j);
@@ -640,11 +582,10 @@ public class Juego implements Serializable {
 
         } else if (j == 5) {
           if ((!meVoy)
-              && (contador > 2 && this.getTablero().getTablero()[k][j].endsWith(reset))
-              && (!this.getTablero().getTablero()[k][j].equals(cincoRojo)
-                  && !this.getTablero().getTablero()[k][j].equals(cincoAzul))
-              && (this.getTablero().getTablero()[k][j - 1].endsWith(reset))) {
-            numeroColor(red, blue, k, j, this.getJugadorActual());
+              && (contador > 2 && !this.getTablero().getFichas()[k][j].esFichaNeutra())
+              && (!(this.getTablero().getFichas()[k][j].getNumero() == 5))
+              && (this.getTablero().getFichas()[k][j - 1].esFichaNeutra())) {
+            setearEsquina(k, j, this.getJugadorActual());
             letra = numeroALetra(k, false, false);
             this.getMensajes()
                 .alargoEsquinaEn(this.getJugadorActual().getAlias(), dondeAlargo, letra, j);
@@ -654,184 +595,58 @@ public class Juego implements Serializable {
     }
 
     if (!this.getJugadorActual().isHumano()) {
-      this.getVt().getAvisaPc().setListData(dondeAlargo.toArray());
+      this.getVentanaTablero().getAvisaPc().setListData(dondeAlargo.toArray());
     } else {
-      this.getVt().getAvisaAlargo().setListData(dondeAlargo.toArray());
+      this.getVentanaTablero().getAvisaAlargo().setListData(dondeAlargo.toArray());
     }
   }
 
   public void calcularPuntaje(Tablero tab) {
     int puntajeJugador1 = 0;
     int puntajeJugador2 = 0;
-    String Dosrojo = "\u001B[31m2\u001B[0m";
-    String Dosazul = "\033[34m2\u001B[0m";
-    String TresRojo = "\u001B[31m3\u001B[0m";
-    String TresAzul = "\033[34m3\u001B[0m";
-    String CuatroRojo = "\u001B[31m4\u001B[0m";
-    String CuatroAzul = "\033[34m4\u001B[0m";
-    String CincoRojo = "\u001B[31m5\u001B[0m";
-    String CincoAzul = "\033[34m5\u001B[0m";
-    for (int i = 0; i < tab.getTablero().length; i++) {
-      for (int j = 0; j < tab.getTablero()[0].length; j++) {
-        switch (tab.getTablero()[i][j]) {
-          // Puntaje del Rojo
-          case "\u001B[31m2\u001B[0m":
-            puntajeJugador1 += 2;
-            break;
-          case "\u001B[31m3\u001B[0m":
-            puntajeJugador1 += 3;
-            break;
-          case "\u001B[31m4\u001B[0m":
-            puntajeJugador1 += 4;
-            break;
-          case "\u001B[31m5\u001B[0m":
-            puntajeJugador1 += 5;
-            break;
-          // Fin puntaje del rojo.
-          // Puntaje del azul.
-          case "\033[34m2\u001B[0m":
-            puntajeJugador2 += 2;
-            break;
-          case "\033[34m3\u001B[0m":
-            puntajeJugador2 += 3;
-            break;
-          case "\033[34m4\u001B[0m":
-            puntajeJugador2 += 4;
-            break;
-          case "\033[34m5\u001B[0m":
-            puntajeJugador2 += 5;
-            break;
-            // Fin puntaje azul.
+
+    for (int i = 0; i < tab.getFichas().length; i++) {
+      for (int j = 0; j < tab.getFichas()[0].length; j++) {
+        Ficha ficha = tab.getFichas()[i][j];
+        if (ficha.getColorFicha().equals(ColorFicha.ROJO)) {
+          puntajeJugador1 += ficha.getNumero();
+        } else {
+          puntajeJugador2 += ficha.getNumero();
         }
       }
     }
-    puntajeJugador1 -= this.getJugador1().getCubos();
-    puntajeJugador2 -= this.getJugador2().getCubos();
+
+    puntajeJugador1 -= this.getJugador1().getFichasRestantes();
+    puntajeJugador2 -= this.getJugador2().getFichasRestantes();
+
     this.getJugador1().setPuntaje(puntajeJugador1);
     this.getJugador2().setPuntaje(puntajeJugador2);
   }
 
-  public int calculaFichas(Tablero tab, int fila) {
-    int puntajeJugador1 = 0;
-    int puntajeJugador2 = 0;
-
-    String Dosrojo = "\u001B[31m2\u001B[0m";
-    String Dosazul = "\033[34m2\u001B[0m";
-    String TresRojo = "\u001B[31m3\u001B[0m";
-    String TresAzul = "\033[34m3\u001B[0m";
-    String CuatroRojo = "\u001B[31m4\u001B[0m";
-    String CuatroAzul = "\033[34m4\u001B[0m";
-    String CincoRojo = "\u001B[31m5\u001B[0m";
-    String CincoAzul = "\033[34m5\u001B[0m";
-    for (int i = 0; i < tab.getTablero().length; i++) {
-
-      switch (tab.getTablero()[fila][i]) {
-        // Puntaje del Rojo
-        case "\u001B[31mR\u001B[0m":
-          puntajeJugador1++;
-          break;
-        case "\u001B[31m2\u001B[0m":
-          puntajeJugador1 += 2;
-          break;
-        case "\u001B[31m3\u001B[0m":
-          puntajeJugador1 += 3;
-          break;
-        case "\u001B[31m4\u001B[0m":
-          puntajeJugador1 += 4;
-          break;
-        case "\u001B[31m5\u001B[0m":
-          puntajeJugador1 += 5;
-          break;
-        // Fin puntaje del rojo.
-        // Puntaje del azul.
-        case "\033[34mA\u001B[0m":
-          puntajeJugador2++;
-          break;
-        case "\033[34m2\u001B[0m":
-          puntajeJugador2 += 2;
-          break;
-        case "\033[34m3\u001B[0m":
-          puntajeJugador2 += 3;
-          break;
-        case "\033[34m4\u001B[0m":
-          puntajeJugador2 += 4;
-          break;
-        case "\033[34m5\u001B[0m":
-          puntajeJugador2 += 5;
-          break;
-          // Fin puntaje azul.
-
-      }
-    }
-
-    int total = puntajeJugador1 + puntajeJugador2;
-    return total;
+  public VentanaTablero getVentanaTablero() {
+    return ventanaTablero;
   }
 
-  public VentanaTablero getVt() {
-    return vt;
+  public void setVentanaTablero(VentanaTablero ventanaTablero) {
+    this.ventanaTablero = ventanaTablero;
   }
 
-  public void setVt(VentanaTablero vt) {
-    this.vt = vt;
-  }
+  private void setearEsquina(int fila, int columna, Jugador jugador) {
+    JButton boton = this.getVentanaTablero().getBotones()[fila][columna];
+    if (boton == null) return;
 
-  private void numeroColor(String red, String blue, int i, int c, Jugador j) {
-    String Dosrojo = "\u001B[31m2\u001B[0m";
-    String Dosazul = "\033[34m2\u001B[0m";
-    String TresRojo = "\u001B[31m3\u001B[0m";
-    String TresAzul = "\033[34m3\u001B[0m";
-    String CuatroRojo = "\u001B[31m4\u001B[0m";
-    String CuatroAzul = "\033[34m4\u001B[0m";
-    String CincoRojo = "\u001B[31m5\u001B[0m";
-    String CincoAzul = "\033[34m5\u001B[0m";
+    Tablero tablero = this.getTablero();
 
-    JButton boton = this.getVt().getBotones()[i][c];
-    if (boton == null) return; // Evita NullPointerException
-
-    if (this.getJugadorActual().getCubos() > 0) {
-      if ((this.getTablero().getTablero()[i][c].equals(red)
-          || this.getTablero().getTablero()[i][c].equals(blue))) {
-        if (this.getJugadorActual().equals(this.getJugador1())) {
-          actualizarBoton(boton, new Color(255, 102, 102), "2");
-          this.getTablero().getTablero()[i][c] = Dosrojo;
-        } else {
-          actualizarBoton(boton, new Color(153, 153, 255), "2");
-          this.getTablero().getTablero()[i][c] = Dosazul;
-        }
-      } else if (this.getTablero().getTablero()[i][c].equals(Dosrojo)
-          || this.getTablero().getTablero()[i][c].equals(Dosazul)) {
-        if (this.getJugadorActual().equals(this.getJugador1())) {
-          actualizarBoton(boton, new Color(255, 102, 102), "3");
-          this.getTablero().getTablero()[i][c] = TresRojo;
-        } else {
-          actualizarBoton(boton, new Color(102, 102, 255), "3");
-          this.getTablero().getTablero()[i][c] = TresAzul;
-        }
-      } else if (this.getTablero().getTablero()[i][c].equals(TresRojo)
-          || this.getTablero().getTablero()[i][c].equals(TresAzul)) {
-        if (this.getJugadorActual().equals(this.getJugador1())) {
-          actualizarBoton(boton, new Color(204, 0, 0), "4");
-          this.getTablero().getTablero()[i][c] = CuatroRojo;
-        } else {
-          actualizarBoton(boton, new Color(0, 0, 255), "4");
-          this.getTablero().getTablero()[i][c] = CuatroAzul;
-        }
-      } else if (this.getTablero().getTablero()[i][c].equals(CuatroRojo)
-          || this.getTablero().getTablero()[i][c].equals(CuatroAzul)) {
-        if (this.getJugadorActual().equals(this.getJugador1())) {
-          actualizarBoton(boton, new Color(153, 0, 0), "5");
-          this.getTablero().getTablero()[i][c] = CincoRojo;
-        } else {
-          actualizarBoton(boton, new Color(0, 0, 102), "5");
-          this.getTablero().getTablero()[i][c] = CincoAzul;
-        }
-      } else if (this.getTablero().getTablero()[i][c].equals(CincoRojo)
-          || this.getTablero().getTablero()[i][c].equals(CincoAzul)) {
-        this.getMensajes().esquinaSinGracia(this.getVt());
-      }
-
-      j.setCubos(j.getCubos() - 1);
+    if (tablero.getFichas()[fila][columna].getNumero() < 5
+        && this.getJugadorActual().tieneFichas()) {
+      Ficha ficha = tablero.getFichas()[fila][columna];
+      int altura = ficha.getNumero();
+      Ficha fichaAColocar = jugador.getFichas().get(0);
+      fichaAColocar.setNumero(altura + 1);
+      tablero.getFichas()[fila][columna] = fichaAColocar;
+      ficha.aumentarNumero();
+      actualizarBoton(boton, fichaAColocar.getColor(), fichaAColocar.getNumero() + "");
+      jugador.descontarFichas(1);
     }
   }
 
@@ -852,815 +667,637 @@ public class Juego implements Serializable {
         });
   }
 
-  private void formaEsquina(Jugador j, int c, int i, String red, String blue) {
-    String[][] tab = this.getTablero().getTablero();
-    String reset = "\u001B[0m";
-    String letra = "";
-    ArrayList<String> esquinasFormadas = new ArrayList<>();
-    // Para ver si forma esquina hacia la derecha para abajo.
-    if (this.getJugadorActual().getCubos() > 0) {
-      if ((c > 0 && c < 5) && (i < 5 && i > 0)) {
-        if ((tab[i][c + 1].endsWith(reset)) && (tab[i + 1][c + 1].endsWith(reset))) {
-          int columna = (c + 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        } // Para ver si forma esquina para abajo a la derecha pero viendo desde la columna.
-        if ((tab[i + 1][c].endsWith(reset)) && (tab[i + 1][c + 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // Para ver si se forma esquina para abajo a la izquierda respecto de la fila .
-        if ((tab[i][c - 1].endsWith(reset)) && (tab[i + 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        } // Para ver si forma esquina abajo a la izquierda respecto de columna.
-        if ((tab[i + 1][c].endsWith(reset)) && (tab[i + 1][c - 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // Para ver si forma esquina arriba a la derecha con respecto a la columna.
-        if ((tab[i - 1][c].endsWith(reset)) && (tab[i - 1][c + 1].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // Para ver si forma essquina arriba a la derecha con respecto a fila.
-        if ((tab[i][c + 1].endsWith(reset)) && (tab[i - 1][c + 1].endsWith(reset))) {
-          int columna = (c + 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        } // Para ver si forma esquina arriba a la izquierda respecto de columna.
-        if ((tab[i - 1][c].endsWith(reset)) && (tab[i - 1][c - 1].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // Para ver si se forma esquina arriba a la izquierda co respecto a la fila.
-        if ((tab[i][c - 1].endsWith(reset)) && (tab[i - 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        } // PAra ver si forma esquina porque mi ficha esta rodeada por dos fichas.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c - 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        // Termina para ver fichas rodeadas .
-      } else if (i == 0 && (c > 0 && c < 5)) {
-        // Abajo a la iquiera respecto columna.
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-        // Abajo a la derecha ,columna.
-        if (tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset)) {
-          int columna = (c + 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        } // abajo derecha. columna
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // abajo izquierda columna
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // Si la ficha puesta esta rodeada.
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-      } // para la columna de la izquierda.
-      else if (c == 0 && (i < 5 && i > 0)) {
-        // Para esquina hacia la drecha para abajo fila.
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
-          int columna = (c + 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
-          int columna = (c + 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        // para ficha rodeada desde arriba y costado derecho.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        // PAra ficha rodeada desde abajo y el costado derecho
-        if ((tab[i + 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-      } // para  la fila de abajo del todo.
-      else if (i == 5 && (c < 5 && c > 0)) {
-        // ficha rodeada por otras.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-        }
-        // fin ficha rodeada.
-        if ((tab[i - 1][c - 1].endsWith(reset) && tab[i - 1][c].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
-          int columna = (c + 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-      } // para la columna a la derecha del todo.
-      else if (c == 5 && (i > 0 && i < 5)) {
-        if ((tab[i][c - 1].endsWith(reset) && (tab[i - 1][c].endsWith(reset)))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // Con respecto a columna.
-        if ((tab[i + 1][c].endsWith(reset)) && (tab[i][c - 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        } // Con respecto a columna.
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        } // fila.
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        } // fila.
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-      } // Esquina en posicion [0][0].
-      else if (i == 0 && c == 0) {
-        if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
-          int columna = (c + 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-      } // El caso que forme esquina en la esquina inferior izuierda de la matriz.
-      else if (i == 5 && c == 0) {
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
-          int columna = (c + 1);
-          letra = numeroALetra(i, false, false);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-      } // para la esquina inferior a la derecha de la matriz.
-      else if (i == 5 && c == 5) {
-        if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
-          int fila = (i - 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, true);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          letra = numeroALetra(i, false, false);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-        if ((tab[i - 1][c].endsWith(reset) && tab[i][c - 1].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-      } // Para la esquina de arriba del todo a al a derecha del todo de la matriz Posicion[0][5]
-      else if (i == 0 && c == 5) {
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
-          int columna = (c - 1);
-          numeroColor(red, blue, i, columna, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, columna, esquinasFormadas);
-        }
-        if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
-          int fila = (i + 1);
-          numeroColor(red, blue, fila, c, this.getJugadorActual());
-          letra = numeroALetra(i, true, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-        if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
-          numeroColor(red, blue, i, c, this.getJugadorActual());
-          letra = numeroALetra(i, false, false);
-          this.getMensajes()
-              .formoEsquina(this.getJugadorActual().getAlias(), letra, c, esquinasFormadas);
-        }
-      }
+  private void formaEsquina(int c, int i) {
+    if (!this.getJugadorActual().tieneFichas()) {
+      return;
     }
-    if (!this.getJugadorActual().isHumano()) {
-      this.getVt().getAvisaPCesquina().setListData(esquinasFormadas.toArray());
+
+    Ficha[][] tablero = this.getTablero().getFichas();
+    ArrayList<String> esquinasFormadas = new ArrayList<>();
+    String alias = this.getJugadorActual().getAlias();
+
+    // Check all possible corner formations based on position
+    if (isInteriorPosition(c, i)) {
+      checkInteriorCorners(tablero, c, i, alias, esquinasFormadas);
+    } else if (isTopEdge(c, i)) {
+      checkTopEdgeCorners(tablero, c, i, alias, esquinasFormadas);
+    } else if (isLeftEdge(c, i)) {
+      checkLeftEdgeCorners(tablero, c, i, alias, esquinasFormadas);
+    } else if (isBottomEdge(c, i)) {
+      checkBottomEdgeCorners(tablero, c, i, alias, esquinasFormadas);
+    } else if (isRightEdge(c, i)) {
+      checkRightEdgeCorners(tablero, c, i, alias, esquinasFormadas);
     } else {
-      this.getVt().getAvisa().setListData(esquinasFormadas.toArray());
+      checkCornerPosition(tablero, c, i, alias, esquinasFormadas);
+    }
+
+    // Update UI based on player type
+    updateUI(esquinasFormadas);
+  }
+
+  // Position classification helpers
+  private boolean isInteriorPosition(int c, int i) {
+    return c > 0 && c < 5 && i > 0 && i < 5;
+  }
+
+  private boolean isTopEdge(int c, int i) {
+    return i == 0 && c > 0 && c < 5;
+  }
+
+  private boolean isLeftEdge(int c, int i) {
+    return c == 0 && i > 0 && i < 5;
+  }
+
+  private boolean isBottomEdge(int c, int i) {
+    return i == 5 && c > 0 && c < 5;
+  }
+
+  private boolean isRightEdge(int c, int i) {
+    return c == 5 && i > 0 && i < 5;
+  }
+
+  // Corner checking methods
+  private void checkInteriorCorners(
+      Ficha[][] tablero, int c, int i, String alias, ArrayList<String> esquinasFormadas) {
+    checkCorner(tablero, i, c, 0, 1, 1, 1, alias, esquinasFormadas); // Down-right
+    checkCorner(tablero, i, c, 1, 0, 1, 1, alias, esquinasFormadas); // Down-right (col)
+    checkCorner(tablero, i, c, 0, -1, 1, -1, alias, esquinasFormadas); // Down-left
+    checkCorner(tablero, i, c, 1, 0, 1, -1, alias, esquinasFormadas); // Down-left (col)
+    checkCorner(tablero, i, c, -1, 0, -1, 1, alias, esquinasFormadas); // Up-right
+    checkCorner(tablero, i, c, 0, 1, -1, 1, alias, esquinasFormadas); // Up-right (row)
+    checkCorner(tablero, i, c, -1, 0, -1, -1, alias, esquinasFormadas); // Up-left
+    checkCorner(tablero, i, c, 0, -1, -1, -1, alias, esquinasFormadas); // Up-left (row)
+    checkAdjacentPairs(tablero, i, c, alias, esquinasFormadas);
+  }
+
+  // Similar methods for edge cases would follow (simplified for brevity)
+  private void checkTopEdgeCorners(
+      Ficha[][] tablero, int c, int i, String alias, ArrayList<String> esquinasFormadas) {
+    checkCorner(tablero, i, c, 0, -1, 1, -1, alias, esquinasFormadas); // Down-left
+    checkCorner(tablero, i, c, 0, 1, 1, 1, alias, esquinasFormadas); // Down-right
+    checkCorner(tablero, i, c, 1, 0, 1, 1, alias, esquinasFormadas); // Down-right (col)
+    checkCorner(tablero, i, c, 1, 0, 1, -1, alias, esquinasFormadas); // Down-left (col)
+    checkAdjacentPairs(
+        tablero, i, c, alias, esquinasFormadas, new int[][] {{0, 1, 1, 0}, {0, -1, 1, 0}});
+  }
+
+  // Core corner checking logic
+  private void checkCorner(
+      Ficha[][] tablero,
+      int i,
+      int c,
+      int row1,
+      int col1,
+      int row2,
+      int col2,
+      String alias,
+      ArrayList<String> esquinasFormadas) {
+    if (!tablero[i + row1][c + col1].esFichaNeutra()
+        && !tablero[i + row2][c + col2].esFichaNeutra()) {
+      int newRow = row1 == 0 ? i : i + row1;
+      int newCol = col1 == 0 ? c : c + col1;
+      setearEsquina(newRow, newCol, this.getJugadorActual());
+      String letra = numeroALetra(i, row1 != 0, row1 < 0);
+      this.getMensajes().formoEsquina(alias, letra, newCol, esquinasFormadas);
     }
   }
 
-  private int cuentaEsquina(Jugador j, int c, int i, String red, String blue) {
-    String[][] tab = this.getTablero().getTablero();
+  private void checkAdjacentPairs(
+      Ficha[][] tablero, int i, int c, String alias, ArrayList<String> esquinasFormadas) {
+    int[][] pairs = {{-1, 0, 0, 1}, {-1, 0, 0, -1}, {0, 1, 1, 0}, {0, -1, 1, 0}};
+    checkAdjacentPairs(tablero, i, c, alias, esquinasFormadas, pairs);
+  }
+
+  private void checkAdjacentPairs(
+      Ficha[][] tablero,
+      int i,
+      int c,
+      String alias,
+      ArrayList<String> esquinasFormadas,
+      int[][] pairs) {
+    for (int[] pair : pairs) {
+      if (!tablero[i + pair[0]][c + pair[1]].esFichaNeutra()
+          && !tablero[i + pair[2]][c + pair[3]].esFichaNeutra()) {
+        setearEsquina(i, c, this.getJugadorActual());
+        String letra = numeroALetra(i, false, false);
+        this.getMensajes().formoEsquina(alias, letra, c, esquinasFormadas);
+      }
+    }
+  }
+
+  private void checkLeftEdgeCorners(
+      Ficha[][] tablero, int c, int i, String alias, ArrayList<String> esquinasFormadas) {
+    // Right-down
+    checkCorner(tablero, i, c, 0, 1, 1, 1, alias, esquinasFormadas);
+    // Right-up
+    checkCorner(tablero, i, c, -1, 0, -1, 1, alias, esquinasFormadas);
+    checkCorner(tablero, i, c, 0, 1, -1, 1, alias, esquinasFormadas);
+    // Adjacent pairs (right and down)
+    checkAdjacentPairs(
+        tablero, i, c, alias, esquinasFormadas, new int[][] {{0, 1, 1, 0}, {-1, 0, 1, 0}});
+  }
+
+  private void checkBottomEdgeCorners(
+      Ficha[][] tablero, int c, int i, String alias, ArrayList<String> esquinasFormadas) {
+    // Up-left
+    checkCorner(tablero, i, c, -1, 0, -1, -1, alias, esquinasFormadas);
+    checkCorner(tablero, i, c, 0, -1, -1, -1, alias, esquinasFormadas);
+    // Up-right
+    checkCorner(tablero, i, c, -1, 0, -1, 1, alias, esquinasFormadas);
+    checkCorner(tablero, i, c, 0, 1, -1, 1, alias, esquinasFormadas);
+    // Adjacent pairs (left and right)
+    checkAdjacentPairs(
+        tablero, i, c, alias, esquinasFormadas, new int[][] {{0, -1, -1, 0}, {0, 1, 1, 0}});
+  }
+
+  private void checkRightEdgeCorners(
+      Ficha[][] tablero, int c, int i, String alias, ArrayList<String> esquinasFormadas) {
+    // Left-up
+    checkCorner(tablero, i, c, -1, 0, -1, -1, alias, esquinasFormadas);
+    checkCorner(tablero, i, c, 0, -1, -1, -1, alias, esquinasFormadas);
+    // Left-down
+    checkCorner(tablero, i, c, 0, -1, 1, -1, alias, esquinasFormadas);
+    checkCorner(tablero, i, c, 1, 0, 1, -1, alias, esquinasFormadas);
+    // Adjacent pairs (left and down)
+    checkAdjacentPairs(
+        tablero, i, c, alias, esquinasFormadas, new int[][] {{0, -1, 1, 0}, {-1, 0, 1, 0}});
+  }
+
+  private void checkCornerPosition(
+      Ficha[][] tablero, int c, int i, String alias, ArrayList<String> esquinasFormadas) {
+    // This would be for the corner positions (0,0), (0,5), (5,0), (5,5)
+    if (c == 0 && i == 0) { // Top-left
+      checkCorner(tablero, i, c, 0, 1, 1, 1, alias, esquinasFormadas);
+      checkAdjacentPairs(tablero, i, c, alias, esquinasFormadas, new int[][] {{0, 1, 1, 0}});
+    } else if (c == 5 && i == 0) { // Top-right
+      checkCorner(tablero, i, c, 0, -1, 1, -1, alias, esquinasFormadas);
+      checkAdjacentPairs(tablero, i, c, alias, esquinasFormadas, new int[][] {{0, -1, 1, 0}});
+    } else if (c == 0 && i == 5) { // Bottom-left
+      checkCorner(tablero, i, c, -1, 0, -1, 1, alias, esquinasFormadas);
+      checkAdjacentPairs(tablero, i, c, alias, esquinasFormadas, new int[][] {{0, 1, -1, 0}});
+    } else if (c == 5 && i == 5) { // Bottom-right
+      checkCorner(tablero, i, c, -1, 0, -1, -1, alias, esquinasFormadas);
+      checkAdjacentPairs(tablero, i, c, alias, esquinasFormadas, new int[][] {{0, -1, -1, 0}});
+    }
+  }
+
+  // UI update
+  private void updateUI(ArrayList<String> esquinasFormadas) {
+    Object[] data = esquinasFormadas.toArray();
+    if (!this.getJugadorActual().isHumano()) {
+      this.getVentanaTablero().getAvisaPCesquina().setListData(data);
+    } else {
+      this.getVentanaTablero().getAvisa().setListData(data);
+    }
+  }
+
+  private int cuentaEsquina(int c, int i) {
+    Ficha[][] tab = this.getTablero().getFichas();
     String reset = "\u001B[0m";
     int contador = 0;
     // Para ver si forma esquina hacia la derecha para abajo.
     if ((c > 0 && c < 5) && (i < 5 && i > 0)) {
-      if ((tab[i][c + 1].endsWith(reset)) && (tab[i + 1][c + 1].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra()) && (!tab[i + 1][c + 1].esFichaNeutra())) {
         contador++;
       } // Para ver si forma esquina para abajo a la derecha pero viendo desde la columna.
-      if ((tab[i + 1][c].endsWith(reset)) && (tab[i + 1][c + 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra()) && (!tab[i + 1][c + 1].esFichaNeutra())) {
         contador++;
       } // Para ver si se forma esquina para abajo a la izquierda respecto de la fila .
-      if ((tab[i][c - 1].endsWith(reset)) && (tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra()) && (!tab[i + 1][c - 1].esFichaNeutra())) {
         contador++;
       } // Para ver si forma esquina abajo a la izquierda respecto de columna.
-      if ((tab[i + 1][c].endsWith(reset)) && (tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra()) && (!tab[i + 1][c - 1].esFichaNeutra())) {
         contador++;
       } // Para ver si forma esquina arriba a la derecha con respecto a la columna.
-      if ((tab[i - 1][c].endsWith(reset)) && (tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra()) && (!tab[i - 1][c + 1].esFichaNeutra())) {
         contador++;
       } // Para ver si forma essquina arriba a la derecha con respecto a fila.
-      if ((tab[i][c + 1].endsWith(reset)) && (tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra()) && (!tab[i - 1][c + 1].esFichaNeutra())) {
         contador++;
       } // Para ver si forma esquina arriba a la izquierda respecto de columna.
-      if ((tab[i - 1][c].endsWith(reset)) && (tab[i - 1][c - 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra()) && (!tab[i - 1][c - 1].esFichaNeutra())) {
         contador++;
       } // Para ver si se forma esquina arriba a la izquierda co respecto a la fila.
-      if ((tab[i][c - 1].endsWith(reset)) && (tab[i - 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra()) && (!tab[i - 1][c - 1].esFichaNeutra())) {
         contador++;
       } // PAra ver si forma esquina porque mi ficha esta rodeada por dos fichas.
-      if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i - 1][c].endsWith(reset) && tab[i][c - 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c - 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
         contador++;
       }
       // Termina para ver fichas rodeadas .
     } else if (i == 0 && (c > 0 && c < 5)) {
       // Abajo a la iquiera respecto columna.
-      if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
         contador++;
       }
       // Abajo a la derecha ,columna.
-      if (tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset)) {
+      if (!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra()) {
         contador++;
       } // abajo derecha. columna
-      if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
         contador++;
       } // abajo izquierda columna
-      if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
         contador++;
       } // Si la ficha puesta esta rodeada.
-      if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
         contador++;
       }
     } // para la columna de la izquierda.
     else if (c == 0 && (i < 5 && i > 0)) {
       // Para esquina hacia la drecha para abajo fila.
-      if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
         int columna = (c + 1);
         contador++;
       }
-      if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
         int columna = (c + 1);
         contador++;
       }
-      if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
         int fila = (i + 1);
         contador++;
       }
-      if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
         int fila = (i - 1);
         contador++;
       }
       // para ficha rodeada desde arriba y costado derecho.
-      if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
         contador++;
       }
       // PAra ficha rodeada desde abajo y el costado derecho
-      if ((tab[i + 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
         contador++;
       }
     } // para  la fila de abajo del todo.
     else if (i == 5 && (c < 5 && c > 0)) {
       // ficha rodeada por otras.
-      if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c].endsWith(reset))) {
-        numeroColor(red, blue, i, c, this.getJugadorActual());
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c].esFichaNeutra())) {
+        setearEsquina(i, c, this.getJugadorActual());
       }
       // fin ficha rodeada.
-      if ((tab[i - 1][c - 1].endsWith(reset) && tab[i - 1][c].endsWith(reset))) {
+      if ((!tab[i - 1][c - 1].esFichaNeutra() && !tab[i - 1][c].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
         contador++;
       }
     } // para la columna a la derecha del todo.
     else if (c == 5 && (i > 0 && i < 5)) {
-      if ((tab[i][c - 1].endsWith(reset) && (tab[i - 1][c].endsWith(reset)))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && (!tab[i - 1][c].esFichaNeutra()))) {
         contador++;
       } // Con respecto a columna.
-      if ((tab[i + 1][c].endsWith(reset)) && (tab[i][c - 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra()) && (!tab[i][c - 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
         contador++;
       } // Con respecto a columna.
-      if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
         contador++;
       } // fila.
-      if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
         contador++;
       } // fila.
-      if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
         contador++;
       }
     } // Esquina en posicion [0][0].
     else if (i == 0 && c == 0) {
-      if ((tab[i][c + 1].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c + 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i + 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
         contador++;
       }
     } // El caso que forme esquina en la esquina inferior izuierda de la matriz.
     else if (i == 5 && c == 0) {
-      if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c + 1].endsWith(reset) && tab[i - 1][c + 1].endsWith(reset))) {
+      if ((!tab[i][c + 1].esFichaNeutra() && !tab[i - 1][c + 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i - 1][c].endsWith(reset) && tab[i][c + 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c + 1].esFichaNeutra())) {
         contador++;
       }
     } // para la esquina inferior a la derecha de la matriz.
     else if (i == 5 && c == 5) {
-      if ((tab[i - 1][c].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i][c - 1].endsWith(reset) && tab[i - 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i - 1][c - 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i - 1][c].endsWith(reset) && tab[i][c - 1].endsWith(reset))) {
+      if ((!tab[i - 1][c].esFichaNeutra() && !tab[i][c - 1].esFichaNeutra())) {
         contador++;
       }
     } // Para la esquina de arriba del todo a al a derecha del todo de la matriz Posicion[0][5]
     else if (i == 0 && c == 5) {
-      if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
         contador++;
       }
-      if ((tab[i + 1][c].endsWith(reset) && tab[i + 1][c - 1].endsWith(reset))) {
+      if ((!tab[i + 1][c].esFichaNeutra() && !tab[i + 1][c - 1].esFichaNeutra())) {
 
         contador++;
       }
-      if ((tab[i][c - 1].endsWith(reset) && tab[i + 1][c].endsWith(reset))) {
+      if ((!tab[i][c - 1].esFichaNeutra() && !tab[i + 1][c].esFichaNeutra())) {
         contador++;
       }
     }
     return contador;
   }
 
-  private boolean validarPosicion(int i, int j, Tablero tablero, String red, String blue) {
-    String reset = "\u001B[0m";
+  private boolean validarPosicion(int i, int j, Tablero tablero) {
 
     boolean podes = false;
     // Para posiciones dentro del rango que no se cae.
     if ((j > 0 && j < 5) && (i > 0 && i < 5)) {
-      if ((tablero.getTablero()[i][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j].esFichaNeutra())) {
         podes = true;
 
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
     } // lo de abajo es para la fila de mas arriba del todo para que no se salga de rango
     else if (i == 0 && (j > 0 && j < 5)) {
-      if ((tablero.getTablero()[i][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j - 1].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j - 1].esFichaNeutra())) {
         podes = true;
 
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
 
     } // lo de abajo es para el caso de la esquina de arriba a la izquierda , la posicion (0,0).
     else if (i == 0 && j == 0) {
-      if ((tablero.getTablero()[i][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j].esFichaNeutra())) {
         podes = true;
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
 
     } // Esta es para validar la columna de la izquierda del todo , i menor que 5 y mayor que 0 , j
     // = 0.
     else if (j == 0 && (i < 5 && i > 0)) {
-      if ((tablero.getTablero()[i][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j + 1].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j + 1].esFichaNeutra())) {
 
         podes = true;
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
     } // para la esquina inferior izquierda
     else if (i == 5 && j == 0) {
-      if ((tablero.getTablero()[i][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j].esFichaNeutra())) {
         podes = true;
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
 
     } // para la fila de abajo del todo de la matriz a partir de j = 1 hasta j = 4 , i = 5 (
     // constante )
     else if (i == 5 && (j < 5 && j > 0)) {
-      if ((tablero.getTablero()[i][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j + 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j + 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j].esFichaNeutra())) {
         podes = true;
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
 
     } // Para la esquina inferior derecha.
     else if (i == 5 && j == 5) {
-      if ((tablero.getTablero()[i][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j - 1].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j - 1].esFichaNeutra())) {
         podes = true;
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
 
     } // la columna mas contra la derecha.
     else if (j == 5 && (i < 5 && i > 0)) {
-      if ((tablero.getTablero()[i - 1][j].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j].endsWith(reset))
-          || (tablero.getTablero()[i][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i - 1][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j - 1].endsWith(reset))) {
+      if ((tablero.getFichas()[i - 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i - 1][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j - 1].esFichaNeutra())) {
         podes = true;
 
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
 
     } // la esquina superior derecha.
     else if (i == 0 && j == 5) {
-      if ((tablero.getTablero()[i][j - 1].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j].endsWith(reset))
-          || (tablero.getTablero()[i + 1][j - 1].endsWith(reset))) {
+      if ((tablero.getFichas()[i][j - 1].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j].esFichaNeutra())
+          || (tablero.getFichas()[i + 1][j - 1].esFichaNeutra())) {
         podes = true;
       } else if (this.getJugadorActual().isHumano()) {
-        mensajes.posicionInvalidaDos(this.getVt());
+        mensajes.posicionInvalidaDos(this.getVentanaTablero());
       }
     }
 
     return podes;
   }
 
-  private boolean noEsCuadrado(int i, int j, Tablero tablero, String red, String blue) {
+  private boolean noEsCuadrado(int i, int j, Tablero tablero) {
     boolean NoEsCuadrado = true;
-    String reset = "\u001B[0m";
 
     // Para validar que no se pueda poner una ficha en un lugar que forme un cubo , teniendo en
     // cuanta que i esta entre 1 y 4 y j tambien.
     if ((i < 5 && i > 0) && (j > 0 && j < 5)) {
       // cuadrado a la izquierda es el primero y anda. ( izquierda para arriba)
 
-      if (((tablero.getTablero()[i - 1][j].endsWith(reset))
-          && (tablero.getTablero()[i - 1][j - 1].endsWith(reset))
-          && (tablero.getTablero()[i][j - 1].endsWith(reset)))) {
+      if (((!tablero.getFichas()[i - 1][j].esFichaNeutra())
+          && (!tablero.getFichas()[i - 1][j - 1].esFichaNeutra())
+          && (!tablero.getFichas()[i][j - 1].esFichaNeutra()))) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
 
       } // para ver si forma cuadrado a la Derecha y anda.(derecha para arriba)
-      else if ((tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i - 1][j + 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i - 1][j].endsWith("\u001B[0m"))) {
+      else if ((!tablero.getFichas()[i][j + 1].esFichaNeutra())
+          && (!tablero.getFichas()[i - 1][j + 1].esFichaNeutra())
+          && (!tablero.getFichas()[i - 1][j].esFichaNeutra())) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       } // para ver si forma cuadrado a la izquierda  y anda[ izquierda para abajo)
-      else if ((tablero.getTablero()[i][j - 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j - 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m"))) {
+      else if ((!tablero.getFichas()[i][j - 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j - 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j].esFichaNeutra())) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       } // para ver si forma cuadrado a la derecha  anda menos con la fila C , rarisimo. ( derecha
       // para abajo). el ejemplo es C5 , D5 , D4 , C4.
-      else if ((tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j + 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m"))) {
+      else if ((!tablero.getFichas()[i][j + 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j].esFichaNeutra())) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
 
     } // Para el caso de la esquina superior izquierda.
     else if (i == 0 && j == 0) {
-      if ((tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j + 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m"))) {
+      if ((!tablero.getFichas()[i][j + 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j].esFichaNeutra())) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
     } // para validar que no se forme un cuadrado , pero suponiendo que la ficha fue puesta en la
     // primera fila.
     else if (i == 0 && (j < 5 && j > 0)) {
-      if (((tablero.getTablero()[i][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m")))
-          || ((tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m")))) {
+      if (((!tablero.getFichas()[i][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j].esFichaNeutra()))
+          || ((!tablero.getFichas()[i][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j].esFichaNeutra()))) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
     } // para validar que no se forme un cuadrado en la columna 0. Sin que se salga de rango la
     // matriz y se caiga.
     else if (j == 0 && (i > 0 && i < 5)) {
-      if (((tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j].endsWith("\u001B[0m")))
-          || ((tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m")))) {
+      if (((!tablero.getFichas()[i][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j].esFichaNeutra()))
+          || ((!tablero.getFichas()[i][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j].esFichaNeutra()))) {
         NoEsCuadrado = false;
 
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
     } // para validar que no se forme cuadrado en la esquina inferior izquierda.
     else if (i == 5 && j == 0) {
-      if ((tablero.getTablero()[i - 1][j].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i - 1][j + 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))) {
+      if ((!tablero.getFichas()[i - 1][j].esFichaNeutra())
+          && (!tablero.getFichas()[i - 1][j + 1].esFichaNeutra())
+          && (!tablero.getFichas()[i][j + 1].esFichaNeutra())) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
     } // fila de abajo del todo.
     else if (i == 5 && (j < 5 && j > 0)) {
-      if (((tablero.getTablero()[i][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j].endsWith("\u001B[0m")))
-          || ((tablero.getTablero()[i][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j + 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j].endsWith("\u001B[0m")))) {
+      if (((!tablero.getFichas()[i][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j].esFichaNeutra()))
+          || ((!tablero.getFichas()[i][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j + 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j].esFichaNeutra()))) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
 
     } // Para la esquina de abajo a la derecha.
     else if (i == 5 && j == 5) {
-      if ((tablero.getTablero()[i][j - 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i - 1][j - 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i - 1][j].endsWith("\u001B[0m"))) {
+      if ((!tablero.getFichas()[i][j - 1].esFichaNeutra())
+          && (!tablero.getFichas()[i - 1][j - 1].esFichaNeutra())
+          && (!tablero.getFichas()[i - 1][j].esFichaNeutra())) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
     } // Para la columna borde de la derecha.
     else if (j == 5 && (i > 0 && i < 5)) {
-      if (((tablero.getTablero()[i][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i - 1][j].endsWith("\u001B[0m")))
-          || ((tablero.getTablero()[i][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j - 1].endsWith("\u001B[0m"))
-              && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m")))) {
+      if (((!tablero.getFichas()[i][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i - 1][j].esFichaNeutra()))
+          || ((!tablero.getFichas()[i][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j - 1].esFichaNeutra())
+              && (!tablero.getFichas()[i + 1][j].esFichaNeutra()))) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
     } // para la esquina de arriba a la derecha.
     else if (i == 0 && j == 5) {
-      if ((tablero.getTablero()[i][j - 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j - 1].endsWith("\u001B[0m"))
-          && (tablero.getTablero()[i + 1][j].endsWith("\u001B[0m"))) {
+      if ((!tablero.getFichas()[i][j - 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j - 1].esFichaNeutra())
+          && (!tablero.getFichas()[i + 1][j].esFichaNeutra())) {
         NoEsCuadrado = false;
         if (this.getJugadorActual().isHumano()) {
-          mensajes.posicionInvalida(this.getVt());
+          mensajes.posicionInvalida(this.getVentanaTablero());
         }
       }
     }
     return NoEsCuadrado;
   }
 
-  public boolean ahiSi(int i, int j, Tablero tablero, String red, String blue) {
-    boolean Podes = false;
-    String reset = "\u001B[0m";
-    if ((!tablero.getTablero()[i][j].endsWith(reset))) {
-      Podes = true;
+  public boolean ahiSi(int i, int j, Tablero tablero) {
+    boolean podes = tablero.getFichas()[i][j].esFichaNeutra();
 
-    } else if (this.getJugadorActual().isHumano()) {
-      mensajes.yaHayFicha(this.getVt());
+    if (!podes && this.getJugadorActual().isHumano()) {
+      mensajes.yaHayFicha(this.getVentanaTablero());
     }
-    return Podes;
+
+    return podes;
   }
 
   @Override
@@ -1677,7 +1314,7 @@ public class Juego implements Serializable {
         + ", jugadorActual="
         + jugadorActual
         + ", vt="
-        + vt
+        + ventanaTablero
         + '}';
   }
 }

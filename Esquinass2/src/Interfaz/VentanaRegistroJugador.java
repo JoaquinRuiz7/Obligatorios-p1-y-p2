@@ -2,7 +2,6 @@ package Interfaz;
 
 import dominio.*;
 import javax.swing.ImageIcon;
-
 import javax.swing.JOptionPane;
 
 public class VentanaRegistroJugador extends javax.swing.JFrame {
@@ -34,7 +33,7 @@ public class VentanaRegistroJugador extends javax.swing.JFrame {
         initComponents();
         this.setResizable(false);
          this.setIconImage(new ImageIcon(getClass().getResource("/Imagenes/icono7.png")).getImage());
-        this.setLocationRelativeTo(vM);
+        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(0);
         this.setSize(700,460);
         players.setListData(this.getSistema().getJugadores().toArray());
