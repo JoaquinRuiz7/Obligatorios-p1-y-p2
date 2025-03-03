@@ -3,22 +3,20 @@ package tests;
 import dominio.fichas.Ficha;
 import dominio.fichas.FichaNeutra;
 import dominio.fichas.FichaRoja;
-import dominio.juego.Reglas;
-import dominio.tablero.Coordenada;
-import java.util.List;
+import dominio.juego.CantidadDeEsquinasFormadas;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ReglasTest {
+public class CantidadDeEsquinasFormadasTest {
 
   private Ficha[][] tablero;
-  private Reglas reglas;
+  private CantidadDeEsquinasFormadas cantidadDeEsquinasFormadas;
 
   @Before
   public void setUp() {
     tablero = new Ficha[6][6];
-    reglas = new Reglas();
+    cantidadDeEsquinasFormadas = new CantidadDeEsquinasFormadas();
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 6; j++) {
         tablero[i][j] = new FichaNeutra();
@@ -33,7 +31,7 @@ public class ReglasTest {
     tablero[1][2] = new FichaRoja();
     tablero[2][1] = new FichaRoja();
 
-    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 1, 1);
+    int result = cantidadDeEsquinasFormadas.verificar(tablero, 1, 1);
     Assert.assertEquals(4, result);
   }
 
@@ -42,7 +40,7 @@ public class ReglasTest {
     tablero[1][0] = new FichaRoja();
     tablero[1][1] = new FichaRoja();
     tablero[1][2] = new FichaRoja();
-    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 0, 1);
+    int result = cantidadDeEsquinasFormadas.verificar(tablero, 0, 1);
     Assert.assertEquals(2, result);
   }
 
@@ -51,7 +49,7 @@ public class ReglasTest {
     tablero[1][0] = new FichaRoja();
     tablero[1][1] = new FichaRoja();
     tablero[1][2] = new FichaRoja();
-    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 2, 1);
+    int result = cantidadDeEsquinasFormadas.verificar(tablero, 2, 1);
     Assert.assertEquals(2, result);
   }
 
@@ -60,7 +58,7 @@ public class ReglasTest {
     tablero[0][1] = new FichaRoja();
     tablero[1][1] = new FichaRoja();
     tablero[2][1] = new FichaRoja();
-    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 1, 2);
+    int result = cantidadDeEsquinasFormadas.verificar(tablero, 1, 2);
     Assert.assertEquals(2, result);
   }
 
@@ -69,7 +67,7 @@ public class ReglasTest {
     tablero[0][1] = new FichaRoja();
     tablero[1][1] = new FichaRoja();
     tablero[2][1] = new FichaRoja();
-    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 1, 0);
+    int result = cantidadDeEsquinasFormadas.verificar(tablero, 1, 0);
     Assert.assertEquals(2, result);
   }
 
@@ -77,7 +75,7 @@ public class ReglasTest {
   public void forma1EsquinasALaIzquierda() {
     tablero[0][1] = new FichaRoja();
     tablero[1][1] = new FichaRoja();
-    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 1, 0);
+    int result = cantidadDeEsquinasFormadas.verificar(tablero, 1, 0);
     Assert.assertEquals(1, result);
   }
 
@@ -85,17 +83,7 @@ public class ReglasTest {
   public void formaEsquinaEnElBordeDelTablero() {
     tablero[0][1] = new FichaRoja();
     tablero[1][0] = new FichaRoja();
-    int result = reglas.getCantidadDeEsquinasFormadas(tablero, 0, 0);
+    int result = cantidadDeEsquinasFormadas.verificar(tablero, 0, 0);
     Assert.assertEquals(1, result);
-  }
-
-  @Test
-  public void getCoordenadasDondeAlargoEsquinasTest() {
-    tablero[0][0] = new FichaRoja();
-    tablero[0][1] = new FichaRoja();
-    tablero[1][0] = new FichaRoja();
-    List<Coordenada> coordenadas = reglas.getCoordenadasDondeAlargoEsquina(tablero, 2, 0);
-    Assert.assertEquals(1, coordenadas.size());
-    Assert.assertEquals(new Coordenada(0, 0), coordenadas.get(0));
   }
 }
