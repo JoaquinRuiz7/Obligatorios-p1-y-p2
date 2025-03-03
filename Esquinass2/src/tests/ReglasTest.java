@@ -96,5 +96,6 @@ public class ReglasTest {
     tablero[1][0] = new FichaRoja();
     List<Coordenada> coordenadas = reglas.getCoordenadasDondeAlargoEsquina(tablero, 2, 0);
     Assert.assertEquals(1, coordenadas.size());
+    Assert.assertEquals(new Coordenada(0, 0), coordenadas.get(0));
   }
 }

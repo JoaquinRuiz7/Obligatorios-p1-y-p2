@@ -1,5 +1,7 @@
 package dominio.tablero;
 
+import java.util.Objects;
+
 public class Coordenada {
   private int fila;
   private int columna;
@@ -23,5 +25,19 @@ public class Coordenada {
     this.fila = fila;
   }
 
-  public void setColumna(int columna) {}
+  public void setColumna(int columna) {
+    this.columna = columna;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    Coordenada that = (Coordenada) o;
+    return fila == that.fila && columna == that.columna;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(fila, columna);
+  }
 }
