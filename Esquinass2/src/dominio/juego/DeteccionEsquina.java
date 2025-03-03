@@ -2,10 +2,10 @@ package dominio.juego;
 
 import dominio.fichas.Ficha;
 
-public class EsEsquina extends Regla<Boolean> {
+public class DeteccionEsquina extends Regla<Boolean> {
 
   private static final int[][][] COORDENADAS_A_VERIFICAR = {
-    {{0, -1}, {1, 0}}, {{0, 1}, {-1, 0}},
+    {{0, -1}, {-1, 0}}, {{0, 1}, {1, 0}},
   };
 
   @Override

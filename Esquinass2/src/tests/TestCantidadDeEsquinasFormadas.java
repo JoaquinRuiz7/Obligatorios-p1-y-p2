@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CantidadDeEsquinasFormadasTest {
+public class TestCantidadDeEsquinasFormadas {
 
   private Ficha[][] tablero;
   private CantidadDeEsquinasFormadas cantidadDeEsquinasFormadas;

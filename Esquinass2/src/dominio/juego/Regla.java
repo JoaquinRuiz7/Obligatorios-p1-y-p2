@@ -26,6 +26,6 @@ public abstract class Regla<R> {
   public abstract R verificar(Ficha[][] tablero, int fila, int columna);
 
   protected boolean esPosicionDentroDelTablero(int fila, int columna) {
-    return fila >= 0 && fila < 5 && columna >= 0 && columna < 5;
+    return fila >= 0 && fila <= 5 && columna >= 0 && columna <= 5;
   }
 }
