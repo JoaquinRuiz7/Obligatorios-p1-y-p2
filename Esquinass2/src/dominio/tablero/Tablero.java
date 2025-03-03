@@ -5,7 +5,7 @@ import dominio.fichas.FichaNeutra;
 import java.io.Serializable;
 
 public class Tablero implements Serializable {
-  private static final int TAMANO_TABLERO = 6;
+  public static final int TAMANO_TABLERO = 6;
   private Ficha[][] fichas;
 
   public Tablero(Ficha[][] tablero) {

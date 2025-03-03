@@ -4,6 +4,8 @@ import dominio.fichas.Ficha;
 import dominio.fichas.FichaNeutra;
 import dominio.fichas.FichaRoja;
 import dominio.juego.Reglas;
+import dominio.tablero.Coordenada;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,5 +87,14 @@ public class ReglasTest {
     tablero[1][0] = new FichaRoja();
     int result = reglas.getCantidadDeEsquinasFormadas(tablero, 0, 0);
     Assert.assertEquals(1, result);
+  }
+
+  @Test
+  public void getCoordenadasDondeAlargoEsquinasTest() {
+    tablero[0][0] = new FichaRoja();
+    tablero[0][1] = new FichaRoja();
+    tablero[1][0] = new FichaRoja();
+    List<Coordenada> coordenadas = reglas.getCoordenadasDondeAlargoEsquina(tablero, 2, 0);
+    Assert.assertEquals(1, coordenadas.size());
   }
 }

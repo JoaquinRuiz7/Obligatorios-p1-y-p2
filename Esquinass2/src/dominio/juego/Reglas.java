@@ -1,6 +1,10 @@
 package dominio.juego;
 
 import dominio.fichas.Ficha;
+import dominio.tablero.Coordenada;
+import dominio.tablero.Tablero;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reglas {
   private static final int[][][] COORDENADAS_A_VERIFICAR_PARA_LA_GENERACION_DE_ESQUINAS = {
@@ -24,9 +28,6 @@ public class Reglas {
   };
 
   public int getCantidadDeEsquinasFormadas(Ficha[][] tablero, int fila, int columna) {
-    if (!esPosicionDentroDelTablero(fila, columna)) {
-      return -1;
-    }
 
     int cantidadDeEsquinasFromadas = 0;
 
@@ -55,6 +56,22 @@ public class Reglas {
     }
 
     return cantidadDeEsquinasFromadas;
+  }
+
+  public List<Coordenada> getCoordenadasDondeAlargoEsquina(
+      Ficha[][] tablero, int fila, int columna) {
+    List<Coordenada> coordenadaDondeAlargoEsquina = new ArrayList<>();
+
+    // fila subiendo
+    for (int i = 0; i < Tablero.TAMANO_TABLERO; i++) {
+      if (i >= 2
+          && esPosicionDentroDelTablero((fila - i), columna)
+          && getCantidadDeEsquinasFormadas(tablero, (fila - i), columna) != 0) {
+        coordenadaDondeAlargoEsquina.add(new Coordenada(fila - i, columna));
+      }
+    }
+
+    return coordenadaDondeAlargoEsquina;
   }
 
   private boolean esPosicionDentroDelTablero(int fila, int columna) {
