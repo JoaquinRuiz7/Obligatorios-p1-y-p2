@@ -18,18 +18,18 @@ public class EsquinasExtendidasHorizontalmente extends Regla<List<Coordenada>> {
     List<Coordenada> coordenadaDondeAlargoEsquina = new ArrayList<>();
 
     for (int i = 2; i < Tablero.TAMANO_TABLERO; i++) {
-      int posicionHorizontal = columna - i;
-      if (esPosicionDentroDelTablero(fila, posicionHorizontal)
-          && esEsquina.verificar(tablero, fila, posicionHorizontal)) {
-        coordenadaDondeAlargoEsquina.add(new Coordenada(fila, posicionHorizontal));
+      int nuevaColumna = columna - i;
+      if (esPosicionDentroDelTablero(fila, nuevaColumna)
+          && esEsquina.verificar(tablero, fila, nuevaColumna)) {
+        coordenadaDondeAlargoEsquina.add(new Coordenada(fila, nuevaColumna));
       }
     }
 
     for (int i = 2; i < Tablero.TAMANO_TABLERO; i++) {
-      int posicionHorizontal = columna + i;
-      if (esPosicionDentroDelTablero(fila, posicionHorizontal)
-          && esEsquina.verificar(tablero, fila, posicionHorizontal)) {
-        coordenadaDondeAlargoEsquina.add(new Coordenada(fila, posicionHorizontal));
+      int nuevaColumna = columna + i;
+      if (esPosicionDentroDelTablero(fila, nuevaColumna)
+          && esEsquina.verificar(tablero, fila, nuevaColumna)) {
+        coordenadaDondeAlargoEsquina.add(new Coordenada(fila, nuevaColumna));
       }
     }
 

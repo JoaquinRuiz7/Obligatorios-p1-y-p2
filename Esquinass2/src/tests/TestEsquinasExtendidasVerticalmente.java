@@ -3,7 +3,6 @@ package tests;
 import dominio.fichas.Ficha;
 import dominio.fichas.FichaNeutra;
 import dominio.fichas.FichaRoja;
-import dominio.juego.EsquinasExtendidasHorizontalmente;
 import dominio.juego.EsquinasExtendidasVerticalmente;
 import dominio.tablero.Coordenada;
 import java.util.List;
@@ -15,7 +14,6 @@ public class TestEsquinasExtendidasVerticalmente {
 
   private Ficha[][] tablero;
   private EsquinasExtendidasVerticalmente esquinasExtendidasVerticalmente;
-  private EsquinasExtendidasHorizontalmente esquinasExtendidasHorizontalmente;
 
   @Before
   public void setUp() {
@@ -26,7 +24,6 @@ public class TestEsquinasExtendidasVerticalmente {
       }
     }
     this.esquinasExtendidasVerticalmente = new EsquinasExtendidasVerticalmente();
-    this.esquinasExtendidasHorizontalmente = new EsquinasExtendidasHorizontalmente();
   }
 
   @Test
@@ -43,6 +40,8 @@ public class TestEsquinasExtendidasVerticalmente {
         esquinasExtendidasVerticalmente.verificar(tablero, 5, 0);
 
     Assert.assertEquals(2, coordenadasDondeAlargoEsquina.size());
+    Assert.assertEquals(new Coordenada(2, 0), coordenadasDondeAlargoEsquina.get(0));
+    Assert.assertEquals(new Coordenada(0, 0), coordenadasDondeAlargoEsquina.get(1));
   }
 
   @Test
@@ -57,6 +56,7 @@ public class TestEsquinasExtendidasVerticalmente {
         esquinasExtendidasVerticalmente.verificar(tablero, 3, 0);
 
     Assert.assertEquals(1, coordenadasDondeAlargoEsquina.size());
+    Assert.assertEquals(new Coordenada(0, 0), coordenadasDondeAlargoEsquina.get(0));
   }
 
   @Test
@@ -71,18 +71,6 @@ public class TestEsquinasExtendidasVerticalmente {
         esquinasExtendidasVerticalmente.verificar(tablero, 1, 0);
 
     Assert.assertEquals(1, coordenadasDondeAlargoEsquina.size());
-  }
-
-  @Test
-  public void testExtiendeEsquinaHorizontalmentALaDerecha() {
-    tablero[2][0] = new FichaRoja();
-    tablero[2][1] = new FichaRoja();
-    tablero[2][2] = new FichaRoja();
-    tablero[3][0] = new FichaRoja();
-
-    List<Coordenada> coordenadasDondeAlargoEsquina =
-        esquinasExtendidasHorizontalmente.verificar(tablero, 2, 3);
-
-    Assert.assertEquals(1, coordenadasDondeAlargoEsquina.size());
+    Assert.assertEquals(new Coordenada(5, 0), coordenadasDondeAlargoEsquina.get(0));
   }
 }
