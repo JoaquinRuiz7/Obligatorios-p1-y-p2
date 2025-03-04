@@ -69,7 +69,7 @@ public class TestEsquinasExtendidasHorizontalmente {
   }
 
   @Test
-  public void testExtiendeEsquinaCasoBorde() {
+  public void testExtiendeEsquinaCasoBordeEsquinaSuperiorDerecha() {
     tablero[0][5] = new FichaRoja();
     tablero[1][5] = new FichaRoja();
     tablero[0][4] = new FichaRoja();
@@ -79,5 +79,18 @@ public class TestEsquinasExtendidasHorizontalmente {
 
     Assert.assertEquals(1, coordenadasDondeAlargoEsquina.size());
     Assert.assertEquals(new Coordenada(0, 5), coordenadasDondeAlargoEsquina.get(0));
+  }
+
+  @Test
+  public void testExtiendeEsquinaCasoBordeEsquinaInferiorDerecha() {
+    tablero[5][5] = new FichaRoja();
+    tablero[4][5] = new FichaRoja();
+    tablero[5][4] = new FichaRoja();
+
+    List<Coordenada> coordenadasDondeAlargoEsquina =
+        esquinasExtendidasHorizontalmente.verificar(tablero, 5, 3);
+
+    Assert.assertEquals(1, coordenadasDondeAlargoEsquina.size());
+    Assert.assertEquals(new Coordenada(5, 5), coordenadasDondeAlargoEsquina.get(0));
   }
 }
